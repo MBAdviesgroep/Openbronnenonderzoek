@@ -2,7 +2,12 @@
 
 AI-gestuurde verkenningstool voor bedrijven, bestuurders en reputatie — gebaseerd op openbare bronnen via GPT‑4o met live web search.
 
-De OpenAI API-sleutel zit **server-side** in een environment variable — gebruikers hoeven nooit een sleutel in te vullen.
+**Features:**
+- 🔐 OpenAI API-sleutel zit **server-side** in een environment variable
+- 📄 PDF-upload voor KvK-uittreksels, Graydon/krediet-rapporten en aanvullende documenten — tekst wordt in de browser uitgelezen via pdf.js
+- 🗂️ Automatisch gegenereerd **structuurschema** (Mermaid-organogram) van de bedrijfsstructuur
+- 🖨️ Print-klaar adviesrapport in MB adviesgroep huisstijl
+- 📑 Archief van eerdere onderzoeken (lokaal in browser)
 
 ---
 

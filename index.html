@@ -4,1150 +4,1319 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Openbronnen Onderzoek · MB adviesgroep</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<!-- pdf.js for client-side PDF text extraction -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!-- Mermaid for structuurschema -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
 <style>
-  /* -----------------------------------------------------------
-     MB ADVIESGROEP · Openbronnen Onderzoek
-     Editorial advisory aesthetic
-  ----------------------------------------------------------- */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* =================================================================
+   MB adviesgroep · Openbronnen Onderzoek · v3
+   ================================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    /* Brand palette extracted from logo */
-    --teal:        #1F5878;
-    --teal-deep:   #164159;
-    --teal-soft:   #e6eef3;
-    --teal-tint:   #f1f5f8;
-    --orange:      #E76A3C;
-    --orange-deep: #c8542a;
-    --orange-soft: #fbeee6;
+:root {
+  /* Brand */
+  --teal:        #1F5878;
+  --teal-deep:   #164159;
+  --teal-darker: #0f3349;
+  --teal-soft:   #e6eef3;
+  --teal-tint:   #f1f5f8;
 
-    /* Editorial neutrals */
-    --ink:         #2A2620;
-    --ink-2:       #4a4640;
-    --ink-3:       #7a7569;
-    --ink-4:       #a8a397;
-    --rule:        #d9d3c6;
-    --rule-soft:   #ece7dc;
-    --paper:       #F6F2EA;
-    --paper-2:     #ede7da;
-    --card:        #ffffff;
-    --card-warm:   #fbf8f1;
+  --orange:      #E76A3C;
+  --orange-deep: #c8542a;
+  --orange-soft: #fbeee6;
 
-    /* Functional */
-    --danger:      #b54221;
-    --danger-soft: #fbe9e2;
-    --success:     #2f6b4f;
+  /* Editorial neutrals */
+  --ink:         #2A2620;
+  --ink-2:       #4a4640;
+  --ink-3:       #7a7569;
+  --ink-4:       #a8a397;
+  --rule:        #d9d3c6;
+  --rule-soft:   #ece7dc;
+  --paper:       #F4EFE6;
+  --paper-2:     #ede7da;
+  --card:        #ffffff;
+  --card-warm:   #fbf8f1;
 
-    --serif: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
-    --sans:  'Geist', -apple-system, system-ui, sans-serif;
-    --mono:  'JetBrains Mono', ui-monospace, monospace;
+  /* Section accents */
+  --blue:        #3a6f96;
+  --blue-soft:   #e3edf3;
+  --green:       #4f7a5b;
+  --green-soft:  #e5ede7;
 
-    --radius: 2px;
-    --radius-lg: 4px;
-    --shadow-card: 0 1px 0 rgba(42,38,32,.04), 0 12px 32px -16px rgba(42,38,32,.18);
-  }
+  --danger:      #b54221;
+  --danger-soft: #fbe9e2;
 
-  html, body { height: 100%; }
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 15px;
-    line-height: 1.55;
-    font-weight: 400;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    /* subtle paper grain */
-    background-image:
-      radial-gradient(rgba(42,38,32,.025) 1px, transparent 1px);
-    background-size: 3px 3px;
-  }
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans:  'Geist', -apple-system, system-ui, sans-serif;
+  --mono:  'JetBrains Mono', ui-monospace, monospace;
 
-  /* ---------- LAYOUT ---------- */
-  .page { min-height: 100vh; display: flex; flex-direction: column; }
+  --radius: 4px;
+  --radius-lg: 8px;
+  --shadow-card: 0 2px 0 rgba(42,38,32,.04), 0 24px 60px -28px rgba(20,40,55,.25);
+}
 
-  /* Top bar */
-  .topbar {
-    border-bottom: 1px solid var(--rule);
-    background: var(--card-warm);
-    position: sticky; top: 0; z-index: 50;
-    backdrop-filter: blur(8px);
-    background-color: rgba(251,248,241,.92);
-  }
-  .topbar-inner {
-    max-width: 1160px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 32px;
-    gap: 24px;
-  }
-  .brand { display: flex; align-items: center; gap: 14px; }
-  .brand img { height: 38px; width: auto; display: block; }
-  .brand-divider {
-    width: 1px; height: 28px; background: var(--rule);
-  }
-  .brand-tool {
-    display: flex; flex-direction: column; line-height: 1.1;
-  }
-  .brand-tool .top {
-    font-family: var(--sans);
-    font-size: 10px; font-weight: 500;
-    letter-spacing: 2.4px; text-transform: uppercase;
-    color: var(--ink-3);
-  }
-  .brand-tool .bottom {
-    font-family: var(--serif);
-    font-size: 19px; color: var(--ink);
-    margin-top: 2px;
-    font-style: italic;
-  }
+html, body { height: 100%; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background-image: radial-gradient(rgba(42,38,32,.025) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
 
-  .topbar-actions {
-    display: flex; align-items: center; gap: 18px;
-    font-size: 12px;
-  }
-  .topbar-actions .label {
-    font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
-    color: var(--ink-3);
-  }
-  .topbar-actions .value {
-    font-family: var(--mono); font-size: 12px;
-    color: var(--ink); padding-left: 8px;
-  }
-  .history-btn {
-    background: transparent; border: 1px solid var(--rule);
-    color: var(--ink-2); cursor: pointer;
-    padding: 7px 14px; border-radius: var(--radius);
-    font-family: var(--sans); font-size: 12px;
-    display: inline-flex; align-items: center; gap: 7px;
-    transition: all .15s;
-  }
-  .history-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-tint); }
-  .history-btn .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--orange);
-  }
+/* ---------------------------------------------------------
+   BRANDSTRIP (top dark teal band)
+--------------------------------------------------------- */
+.brandstrip {
+  background: var(--teal-darker);
+  color: rgba(255,255,255,.9);
+  font-size: 12px;
+  padding: 11px 24px;
+  display: flex; justify-content: center; align-items: center; gap: 36px;
+  flex-wrap: wrap;
+  border-bottom: 2px solid var(--orange);
+}
+.brandstrip .item {
+  display: inline-flex; align-items: center; gap: 8px;
+  letter-spacing: .15px;
+}
+.brandstrip .item strong { color: white; font-weight: 600; }
+.brandstrip svg { opacity: .8; }
 
-  /* ---------- HERO ---------- */
-  .hero {
-    max-width: 1160px; margin: 0 auto;
-    padding: 56px 32px 36px;
-    border-bottom: 1px solid var(--rule);
-    position: relative;
-  }
-  .hero-eyebrow {
-    display: flex; align-items: center; gap: 12px;
-    font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px;
-    color: var(--orange-deep); font-weight: 500;
-    margin-bottom: 22px;
-  }
-  .hero-eyebrow::before {
-    content: ""; width: 28px; height: 1px; background: var(--orange);
-  }
-  .hero-title {
-    font-family: var(--serif); font-weight: 400;
-    font-size: clamp(40px, 6vw, 76px);
-    line-height: 1.02; letter-spacing: -0.02em;
-    color: var(--ink); margin-bottom: 18px;
-  }
-  .hero-title em { color: var(--teal); font-style: italic; }
-  .hero-lead {
-    font-family: var(--serif); font-style: italic;
-    font-size: 19px; line-height: 1.5;
-    color: var(--ink-2); max-width: 620px;
-  }
-  .hero-meta {
-    display: flex; gap: 36px; flex-wrap: wrap;
-    margin-top: 32px;
-    padding-top: 22px;
-    border-top: 1px solid var(--rule-soft);
-  }
-  .hero-meta dt {
-    font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
-    color: var(--ink-3); margin-bottom: 4px;
-  }
-  .hero-meta dd {
-    font-family: var(--serif); font-size: 17px;
-    color: var(--ink);
-  }
+/* ---------------------------------------------------------
+   PAGE LAYOUT
+--------------------------------------------------------- */
+.container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 36px 24px 80px;
+}
 
-  /* ---------- MAIN ---------- */
-  .main {
-    max-width: 1160px; margin: 0 auto; width: 100%;
-    padding: 40px 32px 80px;
-    flex: 1;
-  }
+/* ---------------------------------------------------------
+   CARD
+--------------------------------------------------------- */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  border: 1px solid rgba(20,40,55,.06);
+}
 
-  /* ---------- FORM ---------- */
-  .form-grid {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 56px;
-    align-items: start;
-  }
-  .form-aside { position: sticky; top: 92px; }
-  .form-aside .num {
-    font-family: var(--serif); font-size: 64px;
-    color: var(--teal); line-height: 1;
-    font-style: italic;
-  }
-  .form-aside .step-title {
-    font-family: var(--serif); font-size: 22px;
-    color: var(--ink); margin-top: 8px;
-    line-height: 1.2;
-  }
-  .form-aside .step-desc {
-    font-size: 13px; color: var(--ink-3);
-    margin-top: 12px; line-height: 1.55;
-  }
-  .form-aside .stepper {
-    margin-top: 28px; padding-top: 20px;
-    border-top: 1px solid var(--rule-soft);
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .step-item {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 12px; color: var(--ink-3);
-  }
-  .step-item .mark {
-    width: 18px; height: 18px; border-radius: 50%;
-    border: 1px solid var(--rule); background: var(--card);
-    display: grid; place-items: center;
-    font-family: var(--mono); font-size: 10px; color: var(--ink-3);
-  }
-  .step-item.active { color: var(--ink); }
-  .step-item.active .mark { background: var(--teal); color: white; border-color: var(--teal); }
-  .step-item.done .mark { background: var(--orange); color: white; border-color: var(--orange); }
-  .step-item.done .mark::after { content: "✓"; font-size: 11px; font-family: var(--sans); }
-  .step-item.done .mark .num { display: none; }
+/* Card header — dark teal band */
+.card-header {
+  background: linear-gradient(180deg, var(--teal) 0%, var(--teal-deep) 100%);
+  padding: 24px 36px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px;
+  color: white;
+  position: relative;
+}
+.card-header::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--orange) 0%, var(--orange) 70%, transparent 100%);
+}
+.logo-circle {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: white;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,.18);
+  overflow: hidden;
+}
+.logo-circle img { width: 80%; height: auto; display: block; }
+.title-block { text-align: right; }
+.title-block .eyebrow {
+  display: block;
+  font-size: 10.5px; font-weight: 500;
+  letter-spacing: 2.6px; text-transform: uppercase;
+  color: rgba(255,255,255,.7);
+  margin-bottom: 6px;
+}
+.title-block h1 {
+  font-family: var(--serif); font-weight: 400;
+  font-size: 36px; line-height: 1;
+  color: white;
+  letter-spacing: -.015em;
+}
 
-  .form-content {
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-card);
-    padding: 0;
-    overflow: hidden;
-  }
+/* ---------------------------------------------------------
+   SECTION (inside card)
+--------------------------------------------------------- */
+.card-section {
+  padding: 30px 40px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.card-section:last-of-type { border-bottom: none; }
 
-  .form-section { padding: 32px 36px; }
-  .form-section + .form-section { border-top: 1px solid var(--rule-soft); }
+.section-label {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500;
+  margin-bottom: 22px;
+}
+.section-label .bar {
+  width: 3px; height: 14px;
+  background: var(--orange); border-radius: 2px;
+}
 
-  .section-head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    gap: 16px; margin-bottom: 24px;
-  }
-  .section-head h2 {
-    font-family: var(--serif); font-weight: 400;
-    font-size: 24px; color: var(--ink);
-    letter-spacing: -.01em;
-    display: flex; align-items: baseline; gap: 12px;
-  }
-  .section-head h2 .roman {
-    font-style: italic; color: var(--orange);
-    font-size: 18px;
-  }
-  .section-head .hint {
-    font-size: 12px; color: var(--ink-3);
-    font-style: italic;
-  }
+/* ---------------------------------------------------------
+   FORM FIELDS
+--------------------------------------------------------- */
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 28px;
+}
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.full { grid-column: 1 / -1; }
+.field label {
+  font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--ink-2); font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+}
+.field label .req { color: var(--orange); }
+.field input,
+.field textarea {
+  font-family: var(--sans); font-size: 14.5px;
+  background: var(--card-warm);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 10px 13px;
+  width: 100%;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.field textarea { resize: vertical; min-height: 88px; line-height: 1.55; }
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--teal);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(31,88,120,.08);
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--ink-4); }
+.field.error input, .field.error textarea { border-color: var(--danger); background: var(--danger-soft); }
+.field-error { font-size: 11px; color: var(--danger); display: none; margin-top: 2px; }
+.field.error .field-error { display: block; }
 
-  .api-stack {
-    background: var(--teal-tint);
-    border: 1px solid var(--teal-soft);
-    border-radius: var(--radius-lg);
-    padding: 18px 20px;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 16px;
-    align-items: center;
-  }
-  .api-stack .input-wrap { display: flex; flex-direction: column; gap: 6px; }
-  .api-stack label {
-    font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
-    color: var(--teal-deep); font-weight: 500;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .api-stack input {
-    background: white;
-    border: 1px solid #cfdce4;
-    font-family: var(--mono); font-size: 13px;
-    padding: 10px 14px; border-radius: var(--radius);
-    color: var(--ink);
-    width: 100%; outline: none;
-    transition: border-color .15s, box-shadow .15s;
-  }
-  .api-stack input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(31,88,120,.12); }
-  .api-meta {
-    display: flex; flex-direction: column;
-    align-items: flex-end; gap: 6px;
-  }
-  .api-tag {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-    background: white; color: var(--teal-deep);
-    border: 1px solid #cfdce4;
-    border-radius: 999px; padding: 4px 10px;
-    font-weight: 500;
-  }
-  .api-tag .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--orange);
-  }
-  .api-toggle {
-    font-size: 11px; color: var(--ink-3);
-    display: flex; align-items: center; gap: 6px;
-    cursor: pointer; user-select: none;
-  }
-  .api-toggle input { width: 12px; height: 12px; cursor: pointer; accent-color: var(--teal); }
+/* ---------------------------------------------------------
+   RADIO CARDS (Onderzoeksdoel)
+--------------------------------------------------------- */
+.radio-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.radio-card {
+  position: relative;
+  padding: 16px 18px;
+  border: 1.5px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--card-warm);
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.radio-card input {
+  position: absolute; opacity: 0; pointer-events: none;
+}
+.radio-card .rc-head {
+  display: flex; align-items: center; gap: 9px;
+  margin-bottom: 5px;
+}
+.radio-card .rc-icon {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  color: var(--teal);
+}
+.radio-card .rc-title {
+  font-size: 14px; font-weight: 600; color: var(--ink);
+}
+.radio-card .rc-desc {
+  font-size: 12px; color: var(--ink-3);
+  line-height: 1.5;
+}
+.radio-card:hover { border-color: var(--ink-3); background: white; }
+.radio-card.selected {
+  border-color: var(--teal);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(31,88,120,.1);
+}
+.radio-card.selected .rc-icon { color: var(--teal); }
 
-  .fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 22px 28px;
-  }
-  .field { display: flex; flex-direction: column; gap: 7px; }
-  .field.full { grid-column: 1 / -1; }
+/* ---------------------------------------------------------
+   UPLOAD CARDS
+--------------------------------------------------------- */
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.upload-card {
+  position: relative;
+  border: 1.5px dashed var(--rule);
+  border-radius: var(--radius);
+  background: var(--card-warm);
+  padding: 22px 18px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .15s ease;
+  min-height: 200px;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+}
+.upload-card:hover { border-color: var(--ink-3); background: white; }
+.upload-card.dragover { border-color: var(--orange); background: var(--orange-soft); border-style: solid; }
+.upload-card.has-file { border-style: solid; background: white; border-color: var(--teal); }
 
-  .field label {
-    font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
-    color: var(--ink-3); font-weight: 500;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .field label .req { color: var(--orange); }
+.upload-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.upload-badge.blue   { background: var(--blue-soft);   color: var(--blue); }
+.upload-badge.orange { background: var(--orange-soft); color: var(--orange-deep); }
+.upload-badge.green  { background: var(--green-soft);  color: var(--green); }
 
-  .field .control-wrap {
-    position: relative;
-  }
-  .field input,
-  .field textarea,
-  .field select {
-    font-family: var(--sans); font-size: 14.5px;
-    background: transparent;
-    color: var(--ink);
-    border: none;
-    border-bottom: 1px solid var(--rule);
-    padding: 8px 0 9px;
-    width: 100%;
-    outline: none;
-    transition: border-color .2s, padding .2s;
-    border-radius: 0;
-    appearance: none;
-  }
-  .field select {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 4.5 L6 7.5 L9 4.5' stroke='%237a7569' stroke-width='1.2' fill='none' stroke-linecap='round'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right center;
-    padding-right: 20px;
-    cursor: pointer;
-  }
-  .field textarea {
-    border: 1px solid var(--rule);
-    border-radius: var(--radius);
-    padding: 11px 12px;
-    resize: vertical;
-    min-height: 80px;
-    background: var(--card-warm);
-  }
-  .field input:focus,
-  .field select:focus { border-bottom-color: var(--teal); border-bottom-width: 2px; padding-bottom: 8px; }
-  .field textarea:focus { border-color: var(--teal); background: white; }
-  .field input::placeholder,
-  .field textarea::placeholder { color: var(--ink-4); }
-  .field.error input,
-  .field.error textarea { border-bottom-color: var(--danger); }
-  .field.error textarea { border-color: var(--danger); }
-  .field-error {
-    font-size: 11px; color: var(--danger);
-    display: none;
-  }
-  .field.error .field-error { display: block; }
+.upload-icon {
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  margin-bottom: 10px;
+  color: var(--ink-2);
+}
+.upload-title {
+  font-size: 14px; font-weight: 600; color: var(--ink);
+  margin-bottom: 4px;
+}
+.upload-desc {
+  font-size: 11.5px; color: var(--ink-3);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  flex: 1;
+}
+.upload-desc .browse { color: var(--orange-deep); font-weight: 500; text-decoration: underline; cursor: pointer; }
+.upload-format {
+  font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--ink-4); font-weight: 500;
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 10px; width: 100%;
+}
+.upload-card input[type=file] { display: none; }
 
-  .btn-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 22px 36px;
-    background: var(--paper-2);
-    border-top: 1px solid var(--rule);
-  }
-  .btn-row-left { font-size: 12px; color: var(--ink-3); font-style: italic; }
-  .btn-row-right { display: flex; gap: 10px; }
+.upload-files {
+  width: 100%;
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: 8px;
+}
+.upload-file {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px;
+  background: var(--teal-tint);
+  border: 1px solid var(--teal-soft);
+  border-radius: 3px;
+  font-size: 11.5px;
+  text-align: left;
+}
+.upload-file .name {
+  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--ink);
+}
+.upload-file .size { font-family: var(--mono); font-size: 10px; color: var(--ink-3); }
+.upload-file .remove {
+  background: none; border: none; cursor: pointer;
+  color: var(--ink-3); padding: 0 4px; font-size: 14px;
+}
+.upload-file .remove:hover { color: var(--danger); }
+.upload-file.processing { background: var(--paper-2); border-color: var(--rule); }
+.upload-file.processing .name::after { content: " …extraheren"; color: var(--ink-3); font-style: italic; }
+.upload-file.error { background: var(--danger-soft); border-color: #f0c5b8; color: var(--danger); }
 
-  .btn {
-    font-family: var(--sans);
-    font-size: 13px; font-weight: 500;
-    padding: 11px 22px;
-    border-radius: var(--radius);
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: all .15s ease;
-    letter-spacing: .2px;
-    display: inline-flex; align-items: center; gap: 9px;
-    line-height: 1;
-    white-space: nowrap;
-  }
-  .btn:active { transform: translateY(1px); }
-  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
-  .btn-primary {
-    background: var(--ink); color: white;
-    border-color: var(--ink);
-  }
-  .btn-primary:hover:not(:disabled) { background: var(--teal-deep); border-color: var(--teal-deep); }
-  .btn-primary .arrow { transition: transform .2s; }
-  .btn-primary:hover:not(:disabled) .arrow { transform: translateX(3px); }
-  .btn-ghost {
-    background: transparent; color: var(--ink-2);
-    border-color: var(--rule);
-  }
-  .btn-ghost:hover { background: var(--card); border-color: var(--ink-3); color: var(--ink); }
-  .btn-accent {
-    background: var(--orange); color: white;
-    border-color: var(--orange);
-  }
-  .btn-accent:hover:not(:disabled) { background: var(--orange-deep); border-color: var(--orange-deep); }
+/* ---------------------------------------------------------
+   CARD CTA (footer button)
+--------------------------------------------------------- */
+.card-cta {
+  padding: 28px 40px 36px;
+  background: linear-gradient(180deg, var(--card) 0%, var(--card-warm) 100%);
+  border-top: 1px solid var(--rule-soft);
+}
+.btn-cta {
+  width: 100%;
+  background: var(--teal-deep);
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .2px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  transition: all .15s ease;
+}
+.btn-cta:hover:not(:disabled) {
+  background: var(--teal-darker);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px -8px rgba(20,40,55,.5);
+}
+.btn-cta:disabled { opacity: .5; cursor: not-allowed; }
+.btn-cta .arrow { transition: transform .2s; }
+.btn-cta:hover:not(:disabled) .arrow { transform: translateX(4px); }
 
-  /* ---------- LOADING ---------- */
-  .loading {
-    display: none;
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-card);
-    padding: 0;
-    overflow: hidden;
-  }
-  .loading.visible { display: block; }
-  .loading-head {
-    padding: 36px 40px 24px;
-    border-bottom: 1px solid var(--rule-soft);
-    background: linear-gradient(180deg, var(--card-warm) 0%, var(--card) 100%);
-  }
-  .loading-head .eyebrow {
-    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
-    color: var(--orange-deep); font-weight: 500;
-    margin-bottom: 14px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .loading-head .eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--orange); }
-  .loading-head h2 {
-    font-family: var(--serif); font-size: 32px;
-    color: var(--ink); font-weight: 400; letter-spacing: -.01em;
-  }
-  .loading-head .target {
-    font-family: var(--serif); font-style: italic; color: var(--teal);
-  }
-  .loading-head .lead {
-    margin-top: 12px; font-size: 14px; color: var(--ink-3);
-    font-style: italic;
-  }
+/* meta strip below card */
+.meta-strip {
+  margin-top: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 0 4px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+.meta-strip .dossier {
+  display: inline-flex; align-items: center; gap: 8px;
+  letter-spacing: 1.2px; text-transform: uppercase;
+}
+.meta-strip .dossier .ref {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--ink);
+  background: white; padding: 4px 10px; border-radius: 3px;
+  border: 1px solid var(--rule);
+  letter-spacing: .5px;
+  text-transform: none;
+}
+.meta-strip .archive-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: var(--radius);
+  background: white; border: 1px solid var(--rule);
+  font-family: var(--sans); font-size: 12px; color: var(--ink-2);
+  cursor: pointer;
+  transition: all .15s;
+  letter-spacing: .3px;
+}
+.meta-strip .archive-btn:hover { border-color: var(--teal); color: var(--teal); }
+.meta-strip .archive-btn .dot {
+  width: 6px; height: 6px; background: var(--orange); border-radius: 50%;
+}
 
-  .loading-body { padding: 28px 40px 36px; }
+/* ---------------------------------------------------------
+   ALERT
+--------------------------------------------------------- */
+.alert {
+  display: none;
+  padding: 14px 18px;
+  background: var(--danger-soft);
+  border: 1px solid #f0c5b8;
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--danger);
+  margin-bottom: 20px;
+}
+.alert.visible { display: flex; gap: 10px; align-items: flex-start; }
+.alert .alert-title { font-weight: 600; }
+.alert svg { flex-shrink: 0; margin-top: 1px; }
 
-  .progress-track {
-    height: 2px; background: var(--rule-soft);
-    border-radius: 2px; overflow: hidden;
-    margin-bottom: 28px; position: relative;
-  }
-  .progress-fill {
-    height: 100%; background: linear-gradient(90deg, var(--teal) 0%, var(--orange) 100%);
-    width: 0%;
-    transition: width .8s cubic-bezier(.4,0,.2,1);
-  }
+/* ---------------------------------------------------------
+   LOADING
+--------------------------------------------------------- */
+.loading { display: none; }
+.loading.visible { display: block; }
+.loading-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  border: 1px solid rgba(20,40,55,.06);
+}
+.loading-head {
+  background: linear-gradient(180deg, var(--teal) 0%, var(--teal-deep) 100%);
+  padding: 28px 40px;
+  color: white;
+  position: relative;
+}
+.loading-head::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--orange) 0%, var(--orange) 70%, transparent 100%);
+}
+.loading-head .eyebrow {
+  font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.7); margin-bottom: 8px;
+}
+.loading-head h2 {
+  font-family: var(--serif); font-size: 30px;
+  font-weight: 400; letter-spacing: -.01em;
+  color: white;
+}
+.loading-head .target {
+  font-style: italic; color: var(--orange);
+}
+.loading-head .lead {
+  margin-top: 8px; font-size: 13.5px; color: rgba(255,255,255,.75);
+}
 
-  .steps {
-    display: flex; flex-direction: column; gap: 12px;
-  }
-  .step {
-    display: grid;
-    grid-template-columns: 28px 1fr auto;
-    gap: 16px;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--rule-soft);
-    font-size: 14px;
-    color: var(--ink-4);
-    transition: color .3s;
-  }
-  .step:last-child { border-bottom: none; }
-  .step .icon {
-    width: 22px; height: 22px;
-    border-radius: 50%; background: var(--paper-2);
-    display: grid; place-items: center;
-    font-family: var(--mono); font-size: 11px;
-    color: var(--ink-3);
-    transition: all .3s;
-  }
-  .step .label { letter-spacing: .1px; }
-  .step .time {
-    font-family: var(--mono); font-size: 11px;
-    color: var(--ink-4);
-  }
+.loading-body { padding: 28px 40px 36px; }
+.progress-track {
+  height: 3px; background: var(--rule-soft);
+  border-radius: 2px; overflow: hidden;
+  margin-bottom: 26px; position: relative;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--orange) 100%);
+  width: 0%;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
 
-  .step.active { color: var(--ink); }
-  .step.active .icon {
-    background: white; border: 1.5px solid var(--teal);
-    color: var(--teal);
-    box-shadow: 0 0 0 4px rgba(31,88,120,.1);
-  }
-  .step.active .icon::after {
-    content: "";
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--teal);
-    animation: pulse 1.4s ease-in-out infinite;
-    position: absolute;
-  }
-  .step.active .icon { position: relative; }
-  .step.active .icon .marker { display: none; }
-  .step.done { color: var(--ink-2); }
-  .step.done .icon {
-    background: var(--teal);
-    border: 1.5px solid var(--teal);
-    color: white;
-  }
-  .step.done .icon .marker { display: none; }
-  .step.done .icon::after { content: "✓"; font-size: 12px; }
+.steps { display: flex; flex-direction: column; gap: 6px; }
+.step {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  font-size: 14px;
+  color: var(--ink-4);
+  transition: color .3s;
+}
+.step:last-child { border-bottom: none; }
+.step .icon {
+  width: 22px; height: 22px;
+  border-radius: 50%; background: var(--paper-2);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink-3);
+  transition: all .3s;
+  position: relative;
+}
+.step .time { font-family: var(--mono); font-size: 11px; color: var(--ink-4); }
 
-  @keyframes pulse {
-    0%, 100% { opacity: .9; transform: scale(.9); }
-    50% { opacity: .4; transform: scale(1.15); }
-  }
+.step.active { color: var(--ink); }
+.step.active .icon {
+  background: white; border: 1.5px solid var(--teal);
+  color: var(--teal);
+  box-shadow: 0 0 0 4px rgba(31,88,120,.1);
+}
+.step.active .icon::after {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--teal);
+  animation: pulse 1.4s ease-in-out infinite;
+  position: absolute;
+}
+.step.active .icon .marker { display: none; }
+.step.done { color: var(--ink-2); }
+.step.done .icon {
+  background: var(--teal); border: 1.5px solid var(--teal); color: white;
+}
+.step.done .icon .marker { display: none; }
+.step.done .icon::after { content: "✓"; font-size: 12px; }
+@keyframes pulse {
+  0%, 100% { opacity: .9; transform: scale(.9); }
+  50% { opacity: .4; transform: scale(1.15); }
+}
 
-  /* ---------- ERROR ---------- */
-  .alert {
-    display: none;
-    padding: 14px 18px;
-    background: var(--danger-soft);
-    border: 1px solid #f0c5b8;
-    border-left: 3px solid var(--danger);
-    border-radius: var(--radius);
-    font-size: 13px;
-    color: var(--danger);
-    margin-bottom: 24px;
-  }
-  .alert.visible { display: flex; gap: 10px; align-items: flex-start; }
-  .alert .alert-title { font-weight: 600; }
-  .alert svg { flex-shrink: 0; margin-top: 1px; }
+/* ---------------------------------------------------------
+   REPORT
+--------------------------------------------------------- */
+.report { display: none; }
+.report.visible { display: block; }
 
-  /* ---------- REPORT ---------- */
-  .report { display: none; }
-  .report.visible { display: block; }
+.report-shell {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(20,40,55,.06);
+  overflow: hidden;
+}
 
-  .report-shell {
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-card);
-    overflow: hidden;
-  }
+.report-cover {
+  background: linear-gradient(180deg, var(--teal) 0%, var(--teal-deep) 100%);
+  padding: 40px 48px 32px;
+  color: white;
+  position: relative;
+}
+.report-cover::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--orange) 0%, var(--orange) 70%, transparent 100%);
+}
+.cover-top {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 10.5px; letter-spacing: 2.4px; text-transform: uppercase;
+  color: rgba(255,255,255,.7); margin-bottom: 26px;
+}
+.cover-top .ref { font-family: var(--mono); letter-spacing: .8px; color: var(--orange); }
+.cover-title {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(34px, 5vw, 52px);
+  line-height: 1.05; letter-spacing: -.018em;
+  color: white;
+}
+.cover-subtitle {
+  font-family: var(--serif); font-style: italic;
+  font-size: 19px; color: rgba(255,255,255,.85);
+  margin-top: 10px;
+}
+.cover-dl {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255,255,255,.18);
+}
+.cover-dl dt {
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,.6); margin-bottom: 4px;
+}
+.cover-dl dd {
+  font-family: var(--serif); font-size: 16px;
+  color: white; line-height: 1.3;
+}
+.cover-dl dd.mono { font-family: var(--mono); font-size: 14px; }
 
-  .report-cover {
-    padding: 56px 64px 44px;
-    background:
-      linear-gradient(180deg, var(--card-warm) 0%, var(--card) 100%);
-    border-bottom: 3px double var(--ink);
-    position: relative;
-  }
-  .report-cover::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 64px; right: 64px;
-    height: 1px; background: var(--orange);
-  }
+/* Structuurschema */
+.report-structuur {
+  padding: 32px 48px;
+  background: var(--card-warm);
+  border-bottom: 1px solid var(--rule-soft);
+}
+.report-structuur-head {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500;
+  margin-bottom: 16px;
+}
+.report-structuur-head .bar { width: 3px; height: 14px; background: var(--orange); border-radius: 2px; }
+.diagram-shell {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 24px 16px;
+  overflow-x: auto;
+  text-align: center;
+  min-height: 200px;
+}
+.diagram-shell svg { max-width: 100%; height: auto; }
+.diagram-shell .empty {
+  font-family: var(--serif); font-style: italic;
+  color: var(--ink-3); padding: 30px 0;
+}
+.diagram-legend {
+  margin-top: 16px;
+  display: flex; gap: 16px; flex-wrap: wrap;
+  font-size: 11px; color: var(--ink-3);
+}
+.diagram-legend .item { display: inline-flex; align-items: center; gap: 6px; }
+.diagram-legend .swatch {
+  width: 12px; height: 12px; border-radius: 3px;
+  border: 1.2px solid currentColor;
+  background: currentColor;
+}
 
-  .cover-meta-top {
-    display: flex; justify-content: space-between;
-    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--ink-3); margin-bottom: 24px;
-  }
-  .cover-meta-top .ref {
-    font-family: var(--mono); letter-spacing: .8px;
-    color: var(--orange-deep);
-  }
+/* Report body */
+.report-body {
+  padding: 40px 48px 32px;
+  font-size: 15px;
+  line-height: 1.78;
+  color: var(--ink-2);
+  max-width: 760px;
+}
+.report-body h3 {
+  font-family: var(--serif); font-weight: 400;
+  font-size: 24px;
+  color: var(--ink);
+  margin: 32px 0 12px;
+  line-height: 1.2;
+  letter-spacing: -.01em;
+  position: relative;
+  padding-left: 48px;
+  counter-increment: section;
+}
+.report-body { counter-reset: section; }
+.report-body h3:first-child { margin-top: 0; }
+.report-body h3::before {
+  content: "§ " counter(section, decimal-leading-zero);
+  position: absolute; left: 0; top: 10px;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 1.5px; color: var(--orange);
+  font-weight: 500;
+}
+.report-body p { margin-bottom: 14px; }
+.report-body p.drop-cap::first-letter {
+  font-family: var(--serif);
+  float: left; font-size: 56px; line-height: .9;
+  padding: 6px 12px 0 0; color: var(--teal);
+  font-style: italic;
+}
+.report-body ul { margin: 8px 0 14px 0; padding-left: 0; list-style: none; }
+.report-body ul li {
+  position: relative; padding-left: 22px; margin-bottom: 6px;
+}
+.report-body ul li::before {
+  content: "—"; position: absolute; left: 0; color: var(--orange);
+}
+.report-body strong { color: var(--ink); font-weight: 500; }
+.report-body em { font-family: var(--serif); font-style: italic; }
+.report-body a { color: var(--teal); text-decoration: none; border-bottom: 1px solid var(--teal-soft); }
+.report-body a:hover { border-bottom-color: var(--teal); }
 
-  .cover-eyebrow {
-    display: flex; align-items: center; gap: 12px;
-    font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px;
-    color: var(--teal); font-weight: 500;
-    margin-bottom: 16px;
-  }
-  .cover-eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--teal); }
+.report-footer {
+  padding: 22px 48px 32px;
+  border-top: 1px solid var(--rule-soft);
+  background: var(--card-warm);
+}
+.disclaimer {
+  font-size: 12px; color: var(--ink-3);
+  font-style: italic; line-height: 1.6;
+  max-width: 720px;
+}
+.signature {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid var(--rule-soft);
+  gap: 24px; flex-wrap: wrap;
+}
+.signature .firm { display: flex; align-items: center; gap: 12px; }
+.signature .firm img { height: 32px; opacity: .9; }
+.signature .firm-text { font-size: 11px; color: var(--ink-3); letter-spacing: .3px; }
+.signature .firm-text strong { color: var(--ink); font-weight: 500; }
+.signature .ref { font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: .5px; }
 
-  .cover-title {
-    font-family: var(--serif); font-weight: 400;
-    font-size: clamp(36px, 5vw, 56px);
-    line-height: 1.04; letter-spacing: -.018em;
-    color: var(--ink);
-  }
-  .cover-subtitle {
-    font-family: var(--serif); font-style: italic;
-    font-size: 19px; color: var(--ink-2);
-    margin-top: 12px;
-  }
+.report-actions {
+  margin-top: 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.report-actions .left, .report-actions .right { display: flex; gap: 10px; }
 
-  .cover-dl {
-    margin-top: 36px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 22px;
-    padding-top: 24px;
-    border-top: 1px solid var(--rule);
-  }
-  .cover-dl dt {
-    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--ink-3); margin-bottom: 5px;
-  }
-  .cover-dl dd {
-    font-family: var(--serif); font-size: 16px;
-    color: var(--ink);
-    line-height: 1.3;
-  }
-  .cover-dl dd.mono { font-family: var(--mono); font-size: 14px; }
+.btn {
+  font-family: var(--sans);
+  font-size: 13px; font-weight: 500;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all .15s ease;
+  letter-spacing: .2px;
+  display: inline-flex; align-items: center; gap: 8px;
+  line-height: 1;
+  white-space: nowrap;
+  background: white;
+}
+.btn:active { transform: translateY(1px); }
+.btn-ghost { background: white; color: var(--ink-2); border-color: var(--rule); }
+.btn-ghost:hover { border-color: var(--ink-3); color: var(--ink); }
+.btn-accent {
+  background: var(--orange); color: white; border-color: var(--orange);
+}
+.btn-accent:hover { background: var(--orange-deep); border-color: var(--orange-deep); }
 
-  .report-body {
-    padding: 48px 64px 36px;
-    font-size: 15px;
-    line-height: 1.78;
-    color: var(--ink-2);
-    max-width: 760px;
-  }
-  .report-body h3 {
-    font-family: var(--serif); font-weight: 400;
-    font-size: 26px;
-    color: var(--ink);
-    margin: 38px 0 14px;
-    padding-bottom: 0;
-    line-height: 1.2;
-    letter-spacing: -.01em;
-    position: relative;
-    counter-increment: section;
-    padding-left: 48px;
-  }
-  .report-body h3:first-child { margin-top: 0; }
-  .report-body h3::before {
-    content: "§ " counter(section, decimal-leading-zero);
-    position: absolute;
-    left: 0; top: 12px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    color: var(--orange);
-    font-weight: 500;
-  }
-  .report-body { counter-reset: section; }
-  .report-body p { margin-bottom: 14px; }
-  .report-body p:first-of-type::first-letter {
-    /* drop cap on first paragraph only — handled via JS class */
-  }
-  .report-body p.drop-cap::first-letter {
-    font-family: var(--serif);
-    float: left;
-    font-size: 58px;
-    line-height: .9;
-    padding: 6px 12px 0 0;
-    color: var(--teal);
-    font-style: italic;
-  }
-  .report-body ul { margin: 8px 0 14px 0; padding-left: 0; list-style: none; }
-  .report-body ul li {
-    position: relative;
-    padding-left: 22px;
-    margin-bottom: 6px;
-  }
-  .report-body ul li::before {
-    content: "—";
-    position: absolute; left: 0;
-    color: var(--orange);
-  }
-  .report-body strong { color: var(--ink); font-weight: 500; }
-  .report-body em { font-family: var(--serif); font-style: italic; }
-  .report-body a { color: var(--teal); text-decoration: none; border-bottom: 1px solid var(--teal-soft); }
-  .report-body a:hover { border-bottom-color: var(--teal); }
+/* ---------------------------------------------------------
+   HISTORY DRAWER
+--------------------------------------------------------- */
+.history-overlay {
+  position: fixed; inset: 0;
+  background: rgba(20,40,55,.4);
+  backdrop-filter: blur(2px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+  z-index: 90;
+}
+.history-overlay.visible { opacity: 1; pointer-events: auto; }
+.history-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 420px; max-width: 92vw;
+  background: var(--card-warm);
+  border-left: 1px solid var(--rule);
+  z-index: 100;
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column;
+}
+.history-drawer.visible { transform: translateX(0); }
+.history-drawer-head {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--teal-deep); color: white;
+}
+.history-drawer-head h3 { font-family: var(--serif); font-size: 22px; font-weight: 400; color: white; }
+.history-drawer-head .close {
+  width: 28px; height: 28px;
+  border: 1px solid rgba(255,255,255,.3); background: transparent;
+  border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center;
+  font-size: 16px; color: white;
+}
+.history-drawer-head .close:hover { background: rgba(255,255,255,.1); }
+.history-list { flex: 1; overflow-y: auto; padding: 8px 16px 24px; }
+.history-item {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--rule-soft);
+  cursor: pointer;
+  transition: background .15s;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.history-item:hover { background: var(--card); }
+.history-item .h-title { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+.history-item .h-meta {
+  font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ink-3); display: flex; gap: 10px;
+}
+.history-empty {
+  padding: 60px 24px; text-align: center;
+  color: var(--ink-3); font-style: italic;
+  font-family: var(--serif); font-size: 17px;
+}
 
-  .report-footer {
-    padding: 24px 64px 40px;
-    border-top: 1px solid var(--rule-soft);
-    background: var(--card-warm);
-  }
-  .disclaimer {
-    font-size: 12px; color: var(--ink-3);
-    font-style: italic; line-height: 1.6;
-    max-width: 720px;
-  }
-  .signature {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 24px;
-    padding-top: 18px;
-    border-top: 1px solid var(--rule-soft);
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-  .signature .firm {
-    display: flex; align-items: center; gap: 12px;
-  }
-  .signature .firm img { height: 28px; opacity: .9; }
-  .signature .firm-text {
-    font-size: 11px; color: var(--ink-3);
-    letter-spacing: .5px;
-  }
-  .signature .firm-text strong { color: var(--ink); font-weight: 500; }
-  .signature .ref {
-    font-family: var(--mono); font-size: 11px;
-    color: var(--ink-3); letter-spacing: .5px;
-  }
+/* ---------------------------------------------------------
+   FOOTER
+--------------------------------------------------------- */
+.page-footer {
+  border-top: 1px solid var(--rule);
+  background: var(--teal-darker);
+  padding: 18px 24px;
+  text-align: center;
+  font-size: 10.5px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+}
+.page-footer strong { color: rgba(255,255,255,.85); font-weight: 500; }
+.page-footer .sep { margin: 0 12px; color: rgba(255,255,255,.2); }
 
-  .report-actions {
-    margin-top: 28px;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 16px;
-  }
-  .report-actions .left, .report-actions .right { display: flex; gap: 10px; }
+/* ---------------------------------------------------------
+   RESPONSIVE
+--------------------------------------------------------- */
+@media (max-width: 820px) {
+  .brandstrip { gap: 16px; padding: 10px 16px; font-size: 11px; }
+  .container { padding: 24px 14px 60px; }
+  .card-header { padding: 20px 24px; flex-direction: column; align-items: flex-start; }
+  .title-block { text-align: left; }
+  .title-block h1 { font-size: 28px; }
+  .card-section { padding: 24px 22px; }
+  .card-cta { padding: 22px 22px 28px; }
+  .fields { grid-template-columns: 1fr; }
+  .radio-cards { grid-template-columns: 1fr; }
+  .upload-grid { grid-template-columns: 1fr; }
+  .cover-dl { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .report-cover, .report-structuur, .report-body, .report-footer { padding-left: 22px; padding-right: 22px; }
+}
 
-  /* ---------- HISTORY DRAWER ---------- */
-  .history-overlay {
-    position: fixed; inset: 0;
-    background: rgba(42,38,32,.35);
-    backdrop-filter: blur(2px);
-    opacity: 0; pointer-events: none;
-    transition: opacity .25s;
-    z-index: 90;
-  }
-  .history-overlay.visible { opacity: 1; pointer-events: auto; }
-  .history-drawer {
-    position: fixed; top: 0; right: 0; bottom: 0;
-    width: 420px; max-width: 92vw;
-    background: var(--card-warm);
-    border-left: 1px solid var(--rule);
-    z-index: 100;
-    transform: translateX(100%);
-    transition: transform .3s cubic-bezier(.4,0,.2,1);
-    display: flex; flex-direction: column;
-  }
-  .history-drawer.visible { transform: translateX(0); }
-  .history-drawer-head {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--rule);
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .history-drawer-head h3 {
-    font-family: var(--serif); font-size: 22px; font-weight: 400;
-  }
-  .history-drawer-head .close {
-    width: 28px; height: 28px;
-    border: 1px solid var(--rule); background: var(--card);
-    border-radius: 50%; cursor: pointer;
-    display: grid; place-items: center;
-    font-size: 16px; color: var(--ink-3);
-  }
-  .history-drawer-head .close:hover { color: var(--ink); border-color: var(--ink-3); }
-  .history-list { flex: 1; overflow-y: auto; padding: 8px 16px 24px; }
-  .history-item {
-    padding: 14px 12px;
-    border-bottom: 1px solid var(--rule-soft);
-    cursor: pointer;
-    transition: background .15s;
-    display: flex; flex-direction: column; gap: 4px;
-  }
-  .history-item:hover { background: var(--card); }
-  .history-item .h-title {
-    font-family: var(--serif); font-size: 17px;
-    color: var(--ink);
-  }
-  .history-item .h-meta {
-    font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
-    color: var(--ink-3);
-    display: flex; gap: 10px;
-  }
-  .history-empty {
-    padding: 60px 24px; text-align: center;
-    color: var(--ink-3); font-style: italic;
-    font-family: var(--serif); font-size: 17px;
-  }
-
-  /* ---------- FOOTER ---------- */
-  .footer {
-    border-top: 1px solid var(--rule);
-    background: var(--card-warm);
-    padding: 24px 32px;
-    text-align: center;
-    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--ink-3);
-  }
-  .footer strong { color: var(--ink-2); font-weight: 500; }
-  .footer .sep { margin: 0 12px; color: var(--rule); }
-
-  /* ---------- RESPONSIVE ---------- */
-  @media (max-width: 960px) {
-    .form-grid { grid-template-columns: 1fr; gap: 28px; }
-    .form-aside { position: static; }
-    .form-aside .num { font-size: 48px; }
-    .cover-dl { grid-template-columns: repeat(2, 1fr); }
-    .report-cover, .report-body, .report-footer { padding-left: 32px; padding-right: 32px; }
-    .report-cover::before { left: 32px; right: 32px; }
-  }
-  @media (max-width: 640px) {
-    .topbar-inner { padding: 12px 18px; }
-    .topbar-actions .label { display: none; }
-    .hero { padding: 36px 18px 24px; }
-    .main { padding: 28px 18px 60px; }
-    .fields { grid-template-columns: 1fr; }
-    .form-section { padding: 24px 22px; }
-    .btn-row { padding: 18px 22px; flex-direction: column; align-items: stretch; gap: 12px; }
-    .btn-row-right { justify-content: stretch; }
-    .btn-row-right .btn { flex: 1; justify-content: center; }
-    .api-stack { grid-template-columns: 1fr; }
-    .api-meta { align-items: flex-start; }
-    .report-cover { padding: 32px 22px; }
-    .report-body, .report-footer { padding-left: 22px; padding-right: 22px; }
-    .cover-dl { grid-template-columns: 1fr 1fr; gap: 14px; }
-  }
-
-  /* ---------- PRINT ---------- */
-  @media print {
-    body { background: white; }
-    body::before, body { background-image: none; }
-    .topbar, .hero, .form-grid, .loading, .alert, .report-actions, .footer, .history-overlay, .history-drawer { display: none !important; }
-    .main { padding: 0; max-width: none; }
-    .report-shell { border: none; box-shadow: none; }
-    .report-cover { padding: 24px 0 28px; border-bottom: 2px solid var(--ink); }
-    .report-cover::before { left: 0; right: 0; }
-    .report-body { padding: 28px 0; max-width: none; font-size: 11.5pt; line-height: 1.7; color: #000; }
-    .report-body h3 { color: #000; }
-    .report-footer { padding: 16px 0 0; background: white; }
-    .cover-dl { grid-template-columns: repeat(4, 1fr); }
-    @page { margin: 18mm; }
-  }
+/* ---------------------------------------------------------
+   PRINT
+--------------------------------------------------------- */
+@media print {
+  body { background: white; }
+  body::before, body { background-image: none; }
+  .brandstrip, .form-container, .loading, .alert, .report-actions, .page-footer, .history-overlay, .history-drawer, .meta-strip { display: none !important; }
+  .container { padding: 0; max-width: none; }
+  .report-shell { border: none; box-shadow: none; border-radius: 0; }
+  .report-cover { padding: 24px 0 26px; }
+  .report-structuur { padding: 22px 0; background: white; }
+  .report-body { padding: 28px 0; max-width: none; font-size: 11.5pt; line-height: 1.65; color: #000; }
+  .report-body h3 { color: #000; }
+  .report-footer { padding: 14px 0 0; background: white; }
+  @page { margin: 16mm; }
+}
 </style>
 </head>
-<body>
-<div class="page">
 
-  <!-- ====================  TOPBAR  ==================== -->
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <img src="assets/logo.webp" alt="MB adviesgroep" />
-        <div class="brand-divider"></div>
-        <div class="brand-tool">
-          <span class="top">Onderzoek &amp; Verkenning</span>
-          <span class="bottom">Openbronnen Tool</span>
+<body>
+
+<!-- =====================  BRANDSTRIP  ===================== -->
+<div class="brandstrip">
+  <span class="item">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 12V6L7 2L12 6V12H8.5V8.5H5.5V12H2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    Onderzoek <strong>openbare bronnen</strong>
+  </span>
+  <span class="item">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 11L5 8L7 10L12 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 5H12V8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Bestuurders &amp; <strong>structuur</strong>
+  </span>
+  <span class="item">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4V7L9 8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Verkenning in <strong>± 60 sec.</strong>
+  </span>
+</div>
+
+<!-- =====================  MAIN  ===================== -->
+<main class="container">
+
+  <!-- ====  FORM (card)  ==== -->
+  <div id="formWrap">
+
+    <article class="card">
+
+      <!-- Card header -->
+      <header class="card-header">
+        <div class="logo-circle"><img src="assets/logo.webp" alt="MB adviesgroep" /></div>
+        <div class="title-block">
+          <span class="eyebrow">Openbronnen Verkenning</span>
+          <h1>Bedrijfsonderzoek</h1>
         </div>
-      </div>
-      <div class="topbar-actions">
-        <div>
-          <span class="label">Dossier</span>
-          <span class="value" id="dossierRef">—</span>
+      </header>
+
+      <!-- Section: basic info -->
+      <section class="card-section">
+        <div class="section-label"><span class="bar"></span>Bedrijfsgegevens</div>
+        <div class="fields">
+          <div class="field full" id="f-bedrijfsnaam">
+            <label for="bedrijfsnaam">Bedrijfsnaam <span class="req">*</span></label>
+            <input type="text" id="bedrijfsnaam" placeholder="Bedrijfsnaam invullen" />
+            <span class="field-error">Vul minimaal een bedrijfsnaam in.</span>
+          </div>
+          <div class="field">
+            <label for="kvk">KvK-nummer</label>
+            <input type="text" id="kvk" inputmode="numeric" placeholder="8 cijfers" />
+          </div>
+          <div class="field">
+            <label for="locatie">Locatie</label>
+            <input type="text" id="locatie" placeholder="Plaats, provincie" />
+          </div>
+          <div class="field">
+            <label for="eigenaar">Eigenaar / Directeur</label>
+            <input type="text" id="eigenaar" placeholder="Naam bestuurder of eigenaar" />
+          </div>
+          <div class="field">
+            <label for="sector">Sector</label>
+            <input type="text" id="sector" placeholder="Branche of activiteit" />
+          </div>
         </div>
-        <button class="history-btn" id="openHistory">
-          <span class="dot"></span>
-          Archief
-          <span id="historyCount" style="font-family:var(--mono);color:var(--ink-3);">0</span>
+      </section>
+
+      <!-- Section: onderzoeksdoel -->
+      <section class="card-section">
+        <div class="section-label"><span class="bar"></span>Onderzoeksdoel</div>
+        <div class="radio-cards" id="doelCards">
+          <label class="radio-card selected" data-value="mogelijke aankoop of overname">
+            <input type="radio" name="doel" value="mogelijke aankoop of overname" checked />
+            <div class="rc-head">
+              <span class="rc-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 14V7L9 3L15 7V14H11V10.5H7V14H3Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span>
+              <span class="rc-title">Aankoop / overname</span>
+            </div>
+            <div class="rc-desc">Volledige verkenning ten behoeve van een mogelijke transactie.</div>
+          </label>
+          <label class="radio-card" data-value="potentiële samenwerking">
+            <input type="radio" name="doel" value="potentiële samenwerking" />
+            <div class="rc-head">
+              <span class="rc-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 9C7.66 9 9 7.66 9 6C9 4.34 7.66 3 6 3C4.34 3 3 4.34 3 6C3 7.66 4.34 9 6 9Z" stroke="currentColor" stroke-width="1.3"/><path d="M12 9C13.66 9 15 7.66 15 6C15 4.34 13.66 3 12 3" stroke="currentColor" stroke-width="1.3"/><path d="M3 15C3 12.79 4.79 11 7 11H11C13.21 11 15 12.79 15 15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+              <span class="rc-title">Samenwerking</span>
+            </div>
+            <div class="rc-desc">Reputatie en geschiktheid voor partnership of joint venture.</div>
+          </label>
+          <label class="radio-card" data-value="due diligence en reputatieonderzoek">
+            <input type="radio" name="doel" value="due diligence en reputatieonderzoek" />
+            <div class="rc-head">
+              <span class="rc-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M15 15L11.5 11.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+              <span class="rc-title">Due diligence</span>
+            </div>
+            <div class="rc-desc">Achtergrond, integriteit, juridische geschillen en pers.</div>
+          </label>
+        </div>
+      </section>
+
+      <!-- Section: documenten uploaden -->
+      <section class="card-section">
+        <div class="section-label"><span class="bar"></span>Documenten uploaden</div>
+
+        <div class="upload-grid">
+
+          <div class="upload-card" data-slot="kvk" id="upload-kvk">
+            <span class="upload-badge blue">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1.5" y="1.5" width="7" height="7" stroke="currentColor" stroke-width="1.2"/></svg>
+              KvK / Handelsregister
+            </span>
+            <span class="upload-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M10 6H20L24 10V26H8V6H10Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M20 6V10H24" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 16H20M12 19H20M12 22H17" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </span>
+            <span class="upload-title">KvK-uittreksel</span>
+            <span class="upload-desc">Bestuurders, structuur, vestigingen — <span class="browse">klik om te bladeren</span> of sleep een PDF.</span>
+            <span class="upload-format">PDF · Optioneel maar aanbevolen</span>
+            <input type="file" accept=".pdf,application/pdf" />
+            <div class="upload-files"></div>
+          </div>
+
+          <div class="upload-card" data-slot="graydon" id="upload-graydon">
+            <span class="upload-badge orange">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 9L4 6L6 8L9 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Krediet / Graydon
+            </span>
+            <span class="upload-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 24V14M12 24V10M18 24V16M24 24V8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 26H28" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </span>
+            <span class="upload-title">Krediet- / DD-rapport</span>
+            <span class="upload-desc">Graydon, Dun &amp; Bradstreet of intern DD — <span class="browse">klik om te bladeren</span>.</span>
+            <span class="upload-format">PDF · Sterk aanbevolen</span>
+            <input type="file" accept=".pdf,application/pdf" />
+            <div class="upload-files"></div>
+          </div>
+
+          <div class="upload-card" data-slot="overig" id="upload-overig">
+            <span class="upload-badge green">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 5H7M3 7H7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><rect x="1.5" y="2.5" width="7" height="6" stroke="currentColor" stroke-width="1.2"/></svg>
+              Overige documenten
+            </span>
+            <span class="upload-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 6V20M16 6L11 11M16 6L21 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22V25C6 25.55 6.45 26 7 26H25C25.55 26 26 25.55 26 25V22" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </span>
+            <span class="upload-title">Aanvullend</span>
+            <span class="upload-desc">Jaarverslag, persmap, contracten — meerdere bestanden — <span class="browse">klik om te bladeren</span>.</span>
+            <span class="upload-format">PDF · Meerdere bestanden mogelijk</span>
+            <input type="file" accept=".pdf,application/pdf" multiple />
+            <div class="upload-files"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: aanvullende toelichting -->
+      <section class="card-section">
+        <div class="section-label"><span class="bar"></span>Aanvullende toelichting</div>
+        <div class="field full">
+          <label for="extra">Instructies &amp; wensen <span style="color:var(--ink-4);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;">(optioneel maar krachtig)</span></label>
+          <textarea id="extra" placeholder="Bijv: 'focus op vastgoed-tak', 'check op recente persberichten', 'familieleden uitsluiten', 'specifieke bestuurder verifiëren'..."></textarea>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <div class="card-cta">
+        <div class="alert" id="alert">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M8 5v3.5M8 11h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <div>
+            <div class="alert-title" id="alertTitle">Er ging iets mis</div>
+            <div id="alertMsg"></div>
+          </div>
+        </div>
+        <button class="btn-cta" id="startBtn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" class="arrow">
+            <path d="M3 9H15M15 9L10 4M15 9L10 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Volledige analyse genereren
         </button>
       </div>
-    </div>
-  </header>
+    </article>
 
-  <!-- ====================  HERO  ==================== -->
-  <section class="hero" id="hero">
-    <div class="hero-eyebrow">Module · OSINT</div>
-    <h1 class="hero-title">Openbronnen <em>onderzoek</em>.</h1>
-    <p class="hero-lead">
-      Een zorgvuldige, AI-gestuurde verkenning van bedrijven, bestuurders en
-      reputatie — opgebouwd uit openbare bronnen en geleverd als adviesrapport
-      in de huisstijl van MB adviesgroep.
-    </p>
-    <dl class="hero-meta">
-      <div>
-        <dt>Brontype</dt>
-        <dd>Openbaar &amp; web</dd>
+    <!-- meta strip -->
+    <div class="meta-strip">
+      <div class="dossier">
+        Dossier · <span class="ref" id="dossierRef">—</span>
       </div>
-      <div>
-        <dt>Methodiek</dt>
-        <dd>GPT‑4o &middot; live search</dd>
-      </div>
-      <div>
-        <dt>Doorlooptijd</dt>
-        <dd>± 30&ndash;60 sec.</dd>
-      </div>
-      <div>
-        <dt>Vertrouwelijkheid</dt>
-        <dd>Lokaal &amp; tijdelijk</dd>
-      </div>
-    </dl>
-  </section>
-
-  <!-- ====================  MAIN  ==================== -->
-  <main class="main">
-
-    <!-- INPUT FORM -->
-    <div class="form-grid" id="formGrid">
-
-      <aside class="form-aside">
-        <div class="num">01</div>
-        <div class="step-title">Vul het dossier in.</div>
-        <div class="step-desc">
-          Hoe meer context u verstrekt, hoe scherper de verkenning. Een naam volstaat;
-          KvK, bestuurder en locatie verfijnen de uitkomst aanzienlijk.
-        </div>
-        <div class="stepper">
-          <div class="step-item active" data-step="1"><div class="mark"><span class="num">1</span></div> Gegevens invoeren</div>
-          <div class="step-item" data-step="2"><div class="mark"><span class="num">2</span></div> Bronnen verzamelen</div>
-          <div class="step-item" data-step="3"><div class="mark"><span class="num">3</span></div> Rapport opleveren</div>
-        </div>
-      </aside>
-
-      <div class="form-content">
-
-        <!-- Subject -->
-        <div class="form-section">
-          <div class="section-head">
-            <h2><span class="roman">i.</span> Onderwerp</h2>
-            <span class="hint">* = verplicht</span>
-          </div>
-          <div class="fields">
-            <div class="field full" id="f-bedrijfsnaam">
-              <label for="bedrijfsnaam">Bedrijfsnaam <span class="req">*</span></label>
-              <input type="text" id="bedrijfsnaam" placeholder="bijv. Kauri &amp; Co Beheer B.V." />
-              <span class="field-error">Vul minimaal een bedrijfsnaam in.</span>
-            </div>
-            <div class="field" id="f-kvk">
-              <label for="kvk">KvK-nummer</label>
-              <input type="text" id="kvk" inputmode="numeric" placeholder="37048409" />
-            </div>
-            <div class="field" id="f-locatie">
-              <label for="locatie">Locatie</label>
-              <input type="text" id="locatie" placeholder="Julianadorp, Noord-Holland" />
-            </div>
-            <div class="field" id="f-eigenaar">
-              <label for="eigenaar">Eigenaar / Directeur</label>
-              <input type="text" id="eigenaar" placeholder="H.K. Richter" />
-            </div>
-            <div class="field" id="f-sector">
-              <label for="sector">Sector</label>
-              <input type="text" id="sector" placeholder="recreatie, vastgoed, horeca" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Goal -->
-        <div class="form-section">
-          <div class="section-head">
-            <h2><span class="roman">ii.</span> Onderzoeksdoel</h2>
-            <span class="hint">bepaalt de toon en aandachtspunten</span>
-          </div>
-          <div class="fields">
-            <div class="field full">
-              <label for="doel">Aard van onderzoek</label>
-              <select id="doel">
-                <option value="mogelijke aankoop of overname">Mogelijke aankoop / overname</option>
-                <option value="potentiële samenwerking">Potentiële samenwerking</option>
-                <option value="due diligence">Due diligence</option>
-                <option value="reputatie- en achtergrondonderzoek">Reputatie- en achtergrondonderzoek</option>
-                <option value="algemene verkenning">Algemene verkenning</option>
-              </select>
-            </div>
-            <div class="field full">
-              <label for="extra">Aanvullende context <span style="color:var(--ink-4);font-style:italic;text-transform:none;letter-spacing:0;font-size:11px;">(optioneel)</span></label>
-              <textarea id="extra" placeholder="Bekende entiteiten, specifieke aandachtspunten, eerdere bevindingen, onbeantwoorde vragen..."></textarea>
-            </div>
-          </div>
-        </div>
-
-        <div class="btn-row">
-          <div class="btn-row-left">
-            <span class="api-tag" style="background:white;color:var(--teal-deep);border:1px solid #cfdce4;">
-              <span class="dot" style="background:var(--orange);width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px;"></span>
-              GPT‑4o &middot; Live Search &middot; server-side
-            </span>
-          </div>
-          <div class="btn-row-right">
-            <button class="btn btn-ghost" id="clearBtn">Leegmaken</button>
-            <button class="btn btn-primary" id="startBtn">
-              Onderzoek starten
-              <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
+      <button class="archive-btn" id="openHistory">
+        <span class="dot"></span>
+        Archief
+        <span id="historyCount" style="font-family:var(--mono);color:var(--ink-3);">00</span>
+      </button>
     </div>
 
-    <!-- ALERT -->
-    <div class="alert" id="alert" style="margin-top:24px;">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
-        <path d="M8 5v3.5M8 11h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <div>
-        <div class="alert-title" id="alertTitle">Er ging iets mis</div>
-        <div id="alertMsg"></div>
-      </div>
-    </div>
+  </div>
 
-    <!-- LOADING -->
-    <div class="loading" id="loading">
+  <!-- ====  LOADING  ==== -->
+  <div class="loading" id="loading">
+    <div class="loading-card">
       <div class="loading-head">
         <div class="eyebrow">In behandeling</div>
         <h2>Verkenning van <span class="target" id="loadingTarget">—</span></h2>
-        <div class="lead">Openbare bronnen worden geraadpleegd en geanalyseerd.</div>
+        <div class="lead">Documenten en openbare bronnen worden gecombineerd tot één rapport.</div>
       </div>
       <div class="loading-body">
-        <div class="progress-track">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="steps" id="loadingSteps">
-          <!-- populated by JS -->
-        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="steps" id="loadingSteps"></div>
       </div>
     </div>
+  </div>
 
-    <!-- REPORT -->
-    <div class="report" id="report">
-      <div class="report-shell">
-        <div class="report-cover">
-          <div class="cover-meta-top">
-            <span>MB adviesgroep · Openbronnen verkenning</span>
-            <span class="ref" id="reportRef">REF —</span>
-          </div>
-          <div class="cover-eyebrow">Verkenningsrapport</div>
-          <h1 class="cover-title" id="reportTitle">—</h1>
-          <p class="cover-subtitle" id="reportSubtitle">—</p>
-          <dl class="cover-dl" id="reportMeta">
-            <!-- populated by JS -->
-          </dl>
+  <!-- ====  REPORT  ==== -->
+  <div class="report" id="report">
+    <div class="report-shell">
+
+      <div class="report-cover">
+        <div class="cover-top">
+          <span>MB adviesgroep · Openbronnen verkenning</span>
+          <span class="ref" id="reportRef">REF —</span>
         </div>
-        <article class="report-body" id="reportBody"></article>
-        <div class="report-footer">
-          <p class="disclaimer" id="reportDisclaimer"></p>
-          <div class="signature">
-            <div class="firm">
-              <img src="assets/logo.webp" alt="MB adviesgroep" />
-              <div class="firm-text">
-                <strong>MB adviesgroep</strong><br/>
-                Onderzoek &amp; advies · Vertrouwelijk
-              </div>
+        <h1 class="cover-title" id="reportTitle">—</h1>
+        <p class="cover-subtitle" id="reportSubtitle">—</p>
+        <dl class="cover-dl" id="reportMeta"></dl>
+      </div>
+
+      <div class="report-structuur" id="structuurSection" style="display:none;">
+        <div class="report-structuur-head"><span class="bar"></span>Bedrijfsstructuur (schematisch)</div>
+        <div class="diagram-shell" id="diagramShell"></div>
+        <div class="diagram-legend">
+          <span class="item" style="color:#c8542a;"><span class="swatch"></span> Natuurlijk persoon</span>
+          <span class="item" style="color:#7a6da5;"><span class="swatch"></span> Stichting</span>
+          <span class="item" style="color:#1f5878;"><span class="swatch"></span> Tussenholding</span>
+          <span class="item" style="color:#2f6b4f;"><span class="swatch"></span> Dochtermaatschappij</span>
+          <span class="item" style="color:#5a8f72;"><span class="swatch"></span> Kleindochter / exploitatie</span>
+          <span class="item" style="color:#d49a5e;"><span class="swatch"></span> Overig / nevenvestiging</span>
+        </div>
+      </div>
+
+      <article class="report-body" id="reportBody"></article>
+
+      <div class="report-footer">
+        <p class="disclaimer" id="reportDisclaimer"></p>
+        <div class="signature">
+          <div class="firm">
+            <img src="assets/logo.webp" alt="MB adviesgroep" />
+            <div class="firm-text">
+              <strong>MB adviesgroep</strong><br/>
+              Onderzoek &amp; advies · Vertrouwelijk
             </div>
-            <div class="ref" id="reportRefBottom">REF —</div>
           </div>
-        </div>
-      </div>
-
-      <div class="report-actions">
-        <div class="left">
-          <button class="btn btn-ghost" id="newBtn">← Nieuw onderzoek</button>
-        </div>
-        <div class="right">
-          <button class="btn btn-ghost" id="copyBtn">Kopiëren</button>
-          <button class="btn btn-accent" id="printBtn">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M4 1.5h6v3M4 10.5H2.5v-5h9v5H10M4 7.5h6v5H4z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Afdrukken / PDF
-          </button>
+          <div class="ref" id="reportRefBottom">REF —</div>
         </div>
       </div>
     </div>
 
-  </main>
-
-  <!-- ====================  FOOTER  ==================== -->
-  <footer class="footer">
-    <strong>MB adviesgroep</strong>
-    <span class="sep">·</span>
-    Openbronnen Onderzoek
-    <span class="sep">·</span>
-    v2.0
-    <span class="sep">·</span>
-    Bedoeld ter oriëntatie — geen juridisch geverifieerd document
-  </footer>
-
-  <!-- ====================  HISTORY DRAWER  ==================== -->
-  <div class="history-overlay" id="historyOverlay"></div>
-  <aside class="history-drawer" id="historyDrawer">
-    <div class="history-drawer-head">
-      <h3>Archief</h3>
-      <button class="close" id="closeHistory">×</button>
+    <div class="report-actions">
+      <div class="left">
+        <button class="btn btn-ghost" id="newBtn">← Nieuw onderzoek</button>
+      </div>
+      <div class="right">
+        <button class="btn btn-ghost" id="copyBtn">Kopiëren</button>
+        <button class="btn btn-accent" id="printBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M4 1.5h6v3M4 10.5H2.5v-5h9v5H10M4 7.5h6v5H4z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Afdrukken / PDF
+        </button>
+      </div>
     </div>
-    <div class="history-list" id="historyList"></div>
-  </aside>
+  </div>
 
-</div>
+</main>
+
+<!-- =====================  HISTORY DRAWER  ===================== -->
+<div class="history-overlay" id="historyOverlay"></div>
+<aside class="history-drawer" id="historyDrawer">
+  <div class="history-drawer-head">
+    <h3>Archief</h3>
+    <button class="close" id="closeHistory">×</button>
+  </div>
+  <div class="history-list" id="historyList"></div>
+</aside>
+
+<!-- =====================  FOOTER  ===================== -->
+<footer class="page-footer">
+  <strong>MB adviesgroep</strong>
+  <span class="sep">·</span>
+  Openbronnen Onderzoek
+  <span class="sep">·</span>
+  v3.0
+  <span class="sep">·</span>
+  Vertrouwelijk · uitsluitend voor intern gebruik
+</footer>
 
 <script>
-/* ================================================================
-   MB adviesgroep · Openbronnen Onderzoek
-   ================================================================ */
+/* =================================================================
+   MB adviesgroep · Openbronnen Onderzoek · v3 · app
+   ================================================================= */
 
-const LS_KEY_HIST  = 'mb_osint_history';
-const LS_KEY_FORM  = 'mb_osint_form_draft';
+// pdf.js worker
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+// Mermaid init
+if (window.mermaid) {
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    securityLevel: 'loose',
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', padding: 16 },
+    themeVariables: {
+      fontFamily: 'Geist, system-ui, sans-serif',
+      fontSize: '13px',
+      primaryColor: '#dce8ee',
+      primaryTextColor: '#2a2620',
+      primaryBorderColor: '#1f5878',
+      lineColor: '#7a7569',
+    }
+  });
+}
 
+const LS_KEY_HIST = 'mb_osint_history';
+const LS_KEY_FORM = 'mb_osint_form_draft';
 const $ = (id) => document.getElementById(id);
 
-/* ---------- State ---------- */
-let progressTimer = null;
-let stepTimers = [];
-
 const LOADING_STEPS = [
-  { label: 'Verzoek voorbereiden',          dur: 1200 },
-  { label: 'Openbare bronnen raadplegen',   dur: 6000 },
-  { label: 'KvK- en bedrijfsgegevens',      dur: 5000 },
-  { label: 'Bestuurders &amp; relaties',    dur: 5000 },
-  { label: 'Reputatie, pers &amp; reviews', dur: 5000 },
-  { label: 'Rapport samenstellen',          dur: 4000 },
+  { label: 'Verzoek voorbereiden',                  dur: 1200 },
+  { label: 'Uw documenten analyseren',              dur: 2500 },
+  { label: 'KvK &amp; bedrijfsgegevens raadplegen', dur: 5500 },
+  { label: 'Bestuurders &amp; eigendomsstructuur',  dur: 5000 },
+  { label: 'Reputatie, pers &amp; openbare bronnen',dur: 5500 },
+  { label: 'Structuurschema opstellen',             dur: 3500 },
+  { label: 'Adviesrapport samenstellen',            dur: 4500 },
 ];
+
+let stepTimers = [];
+// Stored uploaded files (with extracted text)
+const docs = { kvk: [], graydon: [], overig: [] };
 
 /* ---------- Init ---------- */
 document.addEventListener('DOMContentLoaded', () => {
   initForm();
+  initRadioCards();
+  initUploads();
   initHistory();
   renderHistoryCount();
   generateDossierRef();
   buildLoadingSteps();
 
   $('startBtn').addEventListener('click', startOnderzoek);
-  $('clearBtn').addEventListener('click', clearForm);
   $('newBtn').addEventListener('click', resetToForm);
   $('printBtn').addEventListener('click', () => window.print());
   $('copyBtn').addEventListener('click', copyReport);
-
   $('openHistory').addEventListener('click', () => toggleHistory(true));
   $('closeHistory').addEventListener('click', () => toggleHistory(false));
   $('historyOverlay').addEventListener('click', () => toggleHistory(false));
 });
 
-/* ---------- Form draft persistence ---------- */
-const FORM_FIELDS = ['bedrijfsnaam','kvk','eigenaar','locatie','sector','doel','extra'];
-
+/* ---------- Form draft ---------- */
+const FORM_FIELDS = ['bedrijfsnaam','kvk','eigenaar','locatie','sector','extra'];
 function initForm() {
-  // restore draft
   try {
-    const draft = JSON.parse(localStorage.getItem(LS_KEY_FORM) || '{}');
-    FORM_FIELDS.forEach(f => { if (draft[f]) $(f).value = draft[f]; });
+    const d = JSON.parse(localStorage.getItem(LS_KEY_FORM) || '{}');
+    FORM_FIELDS.forEach(f => { if (d[f]) $(f).value = d[f]; });
   } catch {}
-  // save on input
-  FORM_FIELDS.forEach(f => {
-    $(f).addEventListener('input', saveDraft);
-    $(f).addEventListener('change', saveDraft);
-  });
-  // clear error on input
-  $('bedrijfsnaam').addEventListener('input', () => $('f-bedrijfsnaam').classList.remove('error'));
+  FORM_FIELDS.forEach(f => $(f).addEventListener('input', saveDraft));
+  $('bedrijfsnaam').addEventListener('input', () =>
+    $('f-bedrijfsnaam').classList.remove('error'));
 }
-
 function saveDraft() {
-  const draft = {};
-  FORM_FIELDS.forEach(f => { draft[f] = $(f).value; });
-  localStorage.setItem(LS_KEY_FORM, JSON.stringify(draft));
+  const d = {};
+  FORM_FIELDS.forEach(f => { d[f] = $(f).value; });
+  localStorage.setItem(LS_KEY_FORM, JSON.stringify(d));
 }
 
-function clearForm() {
-  FORM_FIELDS.forEach(f => {
-    if (f === 'doel') { $(f).selectedIndex = 0; return; }
-    $(f).value = '';
+/* ---------- Radio cards ---------- */
+function initRadioCards() {
+  document.querySelectorAll('#doelCards .radio-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('#doelCards .radio-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      card.querySelector('input').checked = true;
+    });
   });
-  localStorage.removeItem(LS_KEY_FORM);
-  $('f-bedrijfsnaam').classList.remove('error');
-  hideAlert();
+}
+function getDoel() {
+  const sel = document.querySelector('#doelCards .radio-card.selected');
+  return sel ? sel.dataset.value : 'algemene verkenning';
+}
+
+/* ---------- Uploads ---------- */
+function initUploads() {
+  ['kvk','graydon','overig'].forEach(slot => {
+    const card = document.querySelector(`[data-slot="${slot}"]`);
+    const input = card.querySelector('input[type=file]');
+
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.upload-file')) return;
+      input.click();
+    });
+    input.addEventListener('change', (e) => handleFiles(slot, e.target.files));
+
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault(); card.classList.add('dragover');
+    });
+    card.addEventListener('dragleave', () => card.classList.remove('dragover'));
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      card.classList.remove('dragover');
+      handleFiles(slot, e.dataTransfer.files);
+    });
+  });
+}
+
+async function handleFiles(slot, fileList) {
+  const files = Array.from(fileList).filter(f =>
+    f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf')
+  );
+  if (!files.length) return;
+
+  const card = document.querySelector(`[data-slot="${slot}"]`);
+  const list = card.querySelector('.upload-files');
+
+  // Single-file slots: replace existing
+  if (slot !== 'overig') { docs[slot] = []; list.innerHTML = ''; }
+
+  for (const file of files) {
+    const entry = { name: file.name, size: file.size, text: '', status: 'processing' };
+    docs[slot].push(entry);
+
+    const row = document.createElement('div');
+    row.className = 'upload-file processing';
+    row.innerHTML = `
+      <span class="name">${escapeHtml(file.name)}</span>
+      <span class="size">${formatBytes(file.size)}</span>
+      <button class="remove" title="Verwijderen">×</button>
+    `;
+    list.appendChild(row);
+
+    row.querySelector('.remove').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = docs[slot].indexOf(entry);
+      if (idx >= 0) docs[slot].splice(idx, 1);
+      row.remove();
+      if (!docs[slot].length) card.classList.remove('has-file');
+    });
+
+    card.classList.add('has-file');
+
+    try {
+      const text = await extractPdfText(file);
+      entry.text = text;
+      entry.status = 'ok';
+      row.classList.remove('processing');
+      // Add page-count indicator
+      const pages = (text.match(/\f/g) || []).length + 1;
+      row.querySelector('.size').textContent =
+        formatBytes(file.size) + ' · ' + Math.round(text.length/1000) + 'k tekens';
+    } catch (err) {
+      entry.status = 'error';
+      row.classList.remove('processing');
+      row.classList.add('error');
+      row.querySelector('.name').textContent = file.name + ' — kon niet uitlezen';
+    }
+  }
+}
+
+async function extractPdfText(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(item => item.str).join(' ') + '\n\n';
+  }
+  return text.trim();
+}
+
+function formatBytes(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024*1024) return (n/1024).toFixed(0) + ' KB';
+  return (n/1024/1024).toFixed(1) + ' MB';
 }
 
 /* ---------- Dossier ref ---------- */
@@ -1162,106 +1331,74 @@ function generateDossierRef() {
   return ref;
 }
 
-/* ---------- Stepper ---------- */
-function setStepperState(stage) {
-  // stage: 1 = filling, 2 = loading, 3 = done
-  document.querySelectorAll('.step-item').forEach((el) => {
-    const n = +el.dataset.step;
-    el.classList.remove('active','done');
-    if (n < stage) el.classList.add('done');
-    else if (n === stage) el.classList.add('active');
-  });
-}
-
 /* ---------- Alerts ---------- */
 function showAlert(title, msg) {
   $('alertTitle').textContent = title;
   $('alertMsg').textContent = msg;
   $('alert').classList.add('visible');
-  $('alert').scrollIntoView({ behavior: 'auto', block: 'nearest' });
 }
 function hideAlert() { $('alert').classList.remove('visible'); }
 
-/* ---------- Loading steps UI ---------- */
+/* ---------- Loading UI ---------- */
 function buildLoadingSteps() {
-  const html = LOADING_STEPS.map((s, i) => `
+  $('loadingSteps').innerHTML = LOADING_STEPS.map((s, i) => `
     <div class="step" data-i="${i}">
       <div class="icon"><span class="marker">${String(i+1).padStart(2,'0')}</span></div>
       <div class="label">${s.label}</div>
       <div class="time" data-time>—</div>
     </div>
   `).join('');
-  $('loadingSteps').innerHTML = html;
 }
-
 function startLoadingAnimation() {
   const stepEls = document.querySelectorAll('#loadingSteps .step');
   stepEls.forEach(el => el.classList.remove('active','done'));
   $('progressFill').style.width = '0%';
-
   const total = LOADING_STEPS.reduce((s, x) => s + x.dur, 0);
-  let elapsed = 0;
   const startTime = Date.now();
 
-  // tick for time labels
-  const tickAll = () => {
+  const tick = setInterval(() => {
     const now = Date.now() - startTime;
-    stepEls.forEach((el, i) => {
+    stepEls.forEach(el => {
       const t = el.querySelector('[data-time]');
       if (el.classList.contains('done')) t.textContent = el.dataset.completedAt + 's';
       else if (el.classList.contains('active')) t.textContent = (now/1000).toFixed(1) + 's';
       else t.textContent = '—';
     });
-  };
-  const tickInterval = setInterval(tickAll, 100);
-  stepTimers.push({ type: 'interval', id: tickInterval });
+  }, 100);
+  stepTimers.push({ type:'interval', id:tick });
 
-  // smooth progress fill
-  const fillInterval = setInterval(() => {
+  const fill = setInterval(() => {
     const now = Date.now() - startTime;
-    const pct = Math.min(96, (now / total) * 96); // cap at 96% till response
+    const pct = Math.min(96, (now/total)*96);
     $('progressFill').style.width = pct + '%';
   }, 80);
-  stepTimers.push({ type: 'interval', id: fillInterval });
+  stepTimers.push({ type:'interval', id:fill });
 
-  // activate each step in sequence
   LOADING_STEPS.forEach((s, i) => {
     const startAt = LOADING_STEPS.slice(0, i).reduce((sum, x) => sum + x.dur, 0);
-    const endAt = startAt + s.dur;
-
-    const t1 = setTimeout(() => {
+    const t = setTimeout(() => {
       stepEls.forEach((el, j) => {
-        if (j < i) {
-          if (!el.classList.contains('done')) {
-            el.classList.remove('active');
-            el.classList.add('done');
-            el.dataset.completedAt = ((Date.now() - startTime)/1000).toFixed(1);
-          }
+        if (j < i && !el.classList.contains('done')) {
+          el.classList.remove('active');
+          el.classList.add('done');
+          el.dataset.completedAt = ((Date.now() - startTime)/1000).toFixed(1);
         }
       });
       stepEls[i]?.classList.add('active');
     }, startAt);
-    stepTimers.push({ type: 'timeout', id: t1 });
+    stepTimers.push({ type:'timeout', id:t });
   });
-
-  // last step "stays active" until completeLoadingAnimation()
 }
-
 function completeLoadingAnimation() {
-  // mark all done, fill to 100%
-  document.querySelectorAll('#loadingSteps .step').forEach((el) => {
+  document.querySelectorAll('#loadingSteps .step').forEach(el => {
     el.classList.remove('active');
     el.classList.add('done');
   });
   $('progressFill').style.width = '100%';
   clearLoadingTimers();
 }
-
 function clearLoadingTimers() {
-  stepTimers.forEach(t => {
-    if (t.type === 'interval') clearInterval(t.id);
-    else clearTimeout(t.id);
-  });
+  stepTimers.forEach(t => t.type === 'interval' ? clearInterval(t.id) : clearTimeout(t.id));
   stepTimers = [];
 }
 
@@ -1274,7 +1411,7 @@ async function startOnderzoek() {
   const eigenaar     = $('eigenaar').value.trim();
   const locatie      = $('locatie').value.trim();
   const sector       = $('sector').value.trim();
-  const doel         = $('doel').value;
+  const doel         = getDoel();
   const extra        = $('extra').value.trim();
 
   if (!bedrijfsnaam) {
@@ -1284,20 +1421,27 @@ async function startOnderzoek() {
     return;
   }
 
-  // Switch UI to loading
-  $('formGrid').style.display = 'none';
+  // Check if any uploads are still processing
+  const stillProcessing = ['kvk','graydon','overig'].some(s =>
+    docs[s].some(d => d.status === 'processing'));
+  if (stillProcessing) {
+    showAlert('Even geduld', 'Documenten worden nog uitgelezen — start opnieuw zodra dat klaar is.');
+    return;
+  }
+
+  $('formWrap').style.display = 'none';
   $('loading').classList.add('visible');
   $('loadingTarget').textContent = bedrijfsnaam;
-  setStepperState(2);
   startLoadingAnimation();
+  window.scrollTo({ top: 0, behavior:'smooth' });
 
-  // Smooth scroll to loading
-  $('loading').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  const datum = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+  const datum = new Date().toLocaleDateString('nl-NL', { day:'numeric', month:'long', year:'numeric' });
   const ref = $('dossierRef').textContent;
 
-  const prompt = buildPrompt({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, extra });
+  const docContext = buildDocContext();
+  const prompt = buildPrompt({
+    bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, extra, docContext
+  });
 
   try {
     const response = await fetch('/api/onderzoek', {
@@ -1308,65 +1452,116 @@ async function startOnderzoek() {
 
     if (!response.ok) {
       let errMsg = 'HTTP ' + response.status;
-      try {
-        const err = await response.json();
-        errMsg = err.error || errMsg;
-      } catch {}
-      if (response.status === 404) {
-        errMsg = 'De API-route /api/onderzoek is niet bereikbaar. Werkt de tool nog lokaal? Deploy naar Vercel (zie README) of draai "vercel dev".';
-      }
+      try { const err = await response.json(); errMsg = err.error || errMsg; } catch {}
+      if (response.status === 404)
+        errMsg = 'De API-route /api/onderzoek is niet bereikbaar. Deploy naar Vercel (zie README).';
       throw new Error(errMsg);
     }
 
     const data = await response.json();
     let fullText = extractText(data);
-    if (!fullText) throw new Error('Geen resultaat ontvangen van de server.');
+    if (!fullText) throw new Error('Geen resultaat ontvangen.');
+
+    // Parse structuurschema (mermaid block) and clean from text
+    const { mermaidCode, cleanText } = extractStructuur(fullText);
 
     completeLoadingAnimation();
+    await new Promise(r => setTimeout(r, 400));
 
-    // brief delay so the user sees "100%"
-    await new Promise(r => setTimeout(r, 500));
-
-    renderReport({
-      bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, datum, ref, fullText
+    await renderReport({
+      bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, datum, ref,
+      fullText: cleanText, mermaidCode
     });
 
-    saveToHistory({ bedrijfsnaam, eigenaar, locatie, doel, datum, ref, fullText });
+    saveToHistory({
+      bedrijfsnaam, eigenaar, locatie, doel, datum, ref,
+      fullText: cleanText, mermaidCode
+    });
 
   } catch (err) {
     clearLoadingTimers();
     $('loading').classList.remove('visible');
-    $('formGrid').style.display = '';
-    setStepperState(1);
+    $('formWrap').style.display = '';
     showAlert('Onderzoek mislukt', err.message);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior:'smooth' });
   }
 }
 
+/* ---------- Document context ---------- */
+function buildDocContext() {
+  const parts = [];
+  for (const slot of ['kvk','graydon','overig']) {
+    for (const d of docs[slot]) {
+      if (d.status !== 'ok' || !d.text) continue;
+      const slotLabel = slot === 'kvk' ? 'KvK-uittreksel'
+        : slot === 'graydon' ? 'Krediet- / DD-rapport' : 'Aanvullend document';
+      // Cap each doc at 12000 chars to keep prompt size reasonable
+      const txt = d.text.length > 12000 ? d.text.slice(0, 12000) + '\n[... afgekapt ...]' : d.text;
+      parts.push(`--- BRON: ${slotLabel} — ${d.name} ---\n${txt}\n--- EINDE BRON ---`);
+    }
+  }
+  return parts.join('\n\n');
+}
+
 /* ---------- Prompt ---------- */
-function buildPrompt({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, extra }) {
-  return `Je bent een ervaren zakelijk analist die voor MB adviesgroep — een Nederlands advieskantoor — een openbronnen verkenningsrapport opstelt over een Nederlandse onderneming. Schrijf in zakelijk-Nederlands, helder, beknopt en met intellectuele precisie. Vermijd Engelse termen waar een goed Nederlands woord bestaat.
+function buildPrompt({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, extra, docContext }) {
+  const hasDocs = docContext && docContext.length > 0;
 
-ONDERWERP VAN ONDERZOEK
+  return `Je bent een senior onderzoeker bij MB adviesgroep — een Nederlands advieskantoor.
+Stel een grondig openbronnen verkenningsrapport op over de hieronder genoemde onderneming.
+Schrijf in zakelijk-Nederlands, helder, beknopt en met intellectuele precisie.
+
+ONDERWERP
 - Naam: ${bedrijfsnaam}${kvk ? '\n- KvK-nummer: ' + kvk : ''}${eigenaar ? '\n- Eigenaar / directeur: ' + eigenaar : ''}${locatie ? '\n- Locatie: ' + locatie : ''}${sector ? '\n- Sector: ' + sector : ''}
-- Aard van onderzoek: ${doel}${extra ? '\n- Aanvullende context: ' + extra : ''}
+- Aard van onderzoek: ${doel}${extra ? '\n- Specifieke wensen: ' + extra : ''}
 
-INSTRUCTIES
-1. Raadpleeg actuele openbare bronnen (KvK-uittreksels publiekelijk, bedrijfswebsite, nieuwsberichten, sociale media, reviews, vacaturesites, branche-publicaties).
-2. Schrijf het rapport in vloeiend Nederlands, in lopende tekst per sectie. Gebruik geen opsommingstekens behalve waar een korte feitelijke lijst echt waarde toevoegt (bijv. dochterondernemingen).
-3. Wees eerlijk over onzekerheden. Vermeld expliciet wanneer informatie ontbreekt of niet betrouwbaar te verifiëren is. Speculeer niet.
-4. Houd het bondig — maximaal ± 600 woorden in totaal.
+${hasDocs ? 'AANGELEVERDE DOCUMENTEN\nDe volgende documenten zijn door de adviseur aangeleverd. Gebruik deze als primaire bron — citeer relevante feiten, namen, KvK-nummers en data hieruit.\n\n' + docContext + '\n\n' : ''}WERKWIJZE
+1. Raadpleeg actuele openbare bronnen (handelsregister, bedrijfswebsite, nieuwsberichten, sociale media, branche-publicaties${hasDocs ? ', en de aangeleverde documenten hierboven' : ''}).
+2. Wees eerlijk over onzekerheden. Vermeld expliciet wanneer informatie ontbreekt of niet betrouwbaar te verifiëren is. Speculeer niet.
+3. Schrijf in vloeiende paragrafen, maximaal ± 700 woorden in totaal.
 
-GEBRUIK PRECIES DEZE SECTIE-TITELS (markdown ##):
+VERPLICHTE STRUCTUUR
 
-## De onderneming
-## Eigenaar en management
-## Activiteiten en locaties
-## Reputatie en perceptie
+Gebruik exact deze markdown-sectiekoppen in deze volgorde:
+
+## Profiel van de onderneming
+## Bestuur en eigenaarschap
+## Activiteiten, locaties en groepsstructuur
+## Reputatie, pers en publieke perceptie
 ## Aandachtspunten voor ${doel}
 ## Conclusie
 
-Sluit af met één regel: "Dit rapport is samengesteld op basis van openbare bronnen en dient ter oriëntatie."`;
+NA HET RAPPORT — VERPLICHT BIJ EEN HOLDINGSTRUCTUUR
+
+Sluit af met een Mermaid-blok dat de groepsstructuur weergeeft. Geef ELKE rechtspersoon en natuurlijke persoon een eigen node, met label op twee regels (naam, dan KvK + locatie). Markeer relaties (100% deelneming, bestuurder, etc) op de pijl. Pas een classDef per type toe.
+
+Voorbeeld:
+
+\`\`\`mermaid
+flowchart TD
+    Richter["H.K. Richter<br/>bestuurder / directeur"]:::person
+    Stichting["Stichting SAKH<br/>KvK 60006501"]:::stichting
+    Holding["Let Den Helder Beheer B.V.<br/>KvK 59587911 · Julianadorp"]:::holding
+    Vastgoed["Kauri &amp; Co Vastgoed B.V.<br/>KvK 37048409"]:::dochter
+    Camping["Camping Sint Maartenszee<br/>KvK 37047192"]:::kleindochter
+
+    Richter -->|bestuurder| Stichting
+    Stichting -->|100%| Holding
+    Holding -->|100%| Vastgoed
+    Vastgoed --> Camping
+
+    classDef person fill:#fde4dc,stroke:#c8542a,stroke-width:1.5px,color:#2a2620
+    classDef stichting fill:#ece6f5,stroke:#7a6da5,stroke-width:1.5px,color:#2a2620
+    classDef holding fill:#dce8ee,stroke:#1f5878,stroke-width:1.5px,color:#2a2620
+    classDef dochter fill:#dbeae2,stroke:#2f6b4f,stroke-width:1.5px,color:#2a2620
+    classDef kleindochter fill:#c8dcd0,stroke:#5a8f72,stroke-width:1.5px,color:#2a2620
+    classDef overig fill:#f5e3c8,stroke:#d49a5e,stroke-width:1.5px,color:#2a2620
+\`\`\`
+
+Gebruik UITSLUITEND deze classDef-namen: person, stichting, holding, dochter, kleindochter, overig.
+Als er geen holdingstructuur bekend is, laat het Mermaid-blok dan helemaal weg.
+
+Sluit af met de regel: "Dit rapport is samengesteld op basis van openbare bronnen en dient ter oriëntatie."`;
 }
 
 /* ---------- Response parsing ---------- */
@@ -1384,14 +1579,24 @@ function extractText(data) {
   return text;
 }
 
-/* ---------- Render report ---------- */
-function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, datum, ref, fullText }) {
+function extractStructuur(text) {
+  const re = /```mermaid\s*\n([\s\S]+?)\n```/i;
+  const m = text.match(re);
+  if (!m) return { mermaidCode: '', cleanText: text };
+  return {
+    mermaidCode: m[1].trim(),
+    cleanText: text.replace(m[0], '').replace(/\n{3,}/g, '\n\n').trim()
+  };
+}
 
-  // Strip disclaimer
+/* ---------- Render report ---------- */
+async function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, datum, ref, fullText, mermaidCode }) {
+
+  // Disclaimer
   let disclaimer = 'Dit rapport is samengesteld op basis van openbare bronnen en dient ter oriëntatie. Het betreft een snelle verkenning, geen juridisch geverifieerd document. Voor formele besluitvorming raden wij verificatie via primaire bronnen aan.';
-  const discMatch = fullText.match(/\n+(Dit rapport|Het structuurschema|Gegenereerd door)[^\n]+\.?\s*$/i);
+  const discMatch = fullText.match(/\n+(Dit rapport[^\n]+)\s*$/i);
   if (discMatch) {
-    disclaimer = discMatch[0].trim() + ' Voor formele besluitvorming raden wij verificatie via primaire bronnen aan.';
+    disclaimer = discMatch[1].trim() + ' Voor formele besluitvorming raden wij verificatie via primaire bronnen aan.';
     fullText = fullText.slice(0, discMatch.index);
   }
 
@@ -1404,7 +1609,6 @@ function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, datu
   $('reportRef').textContent = 'REF ' + ref;
   $('reportRefBottom').textContent = 'REF ' + ref;
 
-  // Meta dl
   const meta = [];
   meta.push({ k: 'Onderzoeksdoel', v: capitalize(doel) });
   meta.push({ k: 'Datum',          v: datum });
@@ -1420,22 +1624,33 @@ function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, datu
     </div>
   `).join('');
 
-  $('reportBody').innerHTML = markdownToHtml(fullText.trim());
-  // Add drop cap to first paragraph after first heading
-  const firstP = $('reportBody').querySelector('h3 + p, h3 + p');
-  if (firstP) firstP.classList.add('drop-cap');
-  else {
-    const anyP = $('reportBody').querySelector('p');
-    if (anyP) anyP.classList.add('drop-cap');
+  // Render diagram
+  if (mermaidCode && window.mermaid) {
+    $('structuurSection').style.display = '';
+    $('diagramShell').innerHTML = '<div class="empty">Schema wordt gegenereerd…</div>';
+    try {
+      const id = 'mermaid-' + Date.now();
+      const { svg } = await mermaid.render(id, mermaidCode);
+      $('diagramShell').innerHTML = svg;
+    } catch (e) {
+      console.error('Mermaid render failed:', e);
+      $('diagramShell').innerHTML =
+        '<div class="empty">Kon het structuurschema niet renderen.<br/><small style="font-family:var(--mono);font-style:normal;">' +
+        escapeHtml(e.message || '') + '</small></div>';
+    }
+  } else {
+    $('structuurSection').style.display = 'none';
   }
+
+  $('reportBody').innerHTML = markdownToHtml(fullText.trim());
+  const firstP = $('reportBody').querySelector('h3 + p') || $('reportBody').querySelector('p');
+  if (firstP) firstP.classList.add('drop-cap');
 
   $('reportDisclaimer').textContent = disclaimer;
 
-  // Show
   $('loading').classList.remove('visible');
   $('report').classList.add('visible');
-  setStepperState(3);
-  $('report').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ---------- Markdown ---------- */
@@ -1472,11 +1687,10 @@ function markdownToHtml(text) {
 function resetToForm() {
   $('report').classList.remove('visible');
   $('loading').classList.remove('visible');
-  $('formGrid').style.display = '';
+  $('formWrap').style.display = '';
   hideAlert();
-  setStepperState(1);
   generateDossierRef();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior:'smooth' });
 }
 
 /* ---------- Copy ---------- */
@@ -1494,18 +1708,15 @@ async function copyReport() {
 }
 
 /* ---------- History ---------- */
-function initHistory() {
-  renderHistoryList();
-}
+function initHistory() { renderHistoryList(); }
 function loadHistory() {
   try { return JSON.parse(localStorage.getItem(LS_KEY_HIST) || '[]'); }
   catch { return []; }
 }
 function saveToHistory(entry) {
-  const hist = loadHistory();
-  hist.unshift({ ...entry, savedAt: new Date().toISOString() });
-  // keep max 30
-  localStorage.setItem(LS_KEY_HIST, JSON.stringify(hist.slice(0, 30)));
+  const h = loadHistory();
+  h.unshift({ ...entry, savedAt: new Date().toISOString() });
+  localStorage.setItem(LS_KEY_HIST, JSON.stringify(h.slice(0, 30)));
   renderHistoryCount();
   renderHistoryList();
 }
@@ -1514,42 +1725,35 @@ function renderHistoryCount() {
   $('historyCount').textContent = String(n).padStart(2,'0');
 }
 function renderHistoryList() {
-  const hist = loadHistory();
-  if (hist.length === 0) {
+  const h = loadHistory();
+  if (!h.length) {
     $('historyList').innerHTML = `<div class="history-empty">Nog geen onderzoeken in het archief.</div>`;
     return;
   }
-  $('historyList').innerHTML = hist.map((h, i) => `
+  $('historyList').innerHTML = h.map((it, i) => `
     <div class="history-item" data-idx="${i}">
-      <div class="h-title">${escapeHtml(h.bedrijfsnaam)}</div>
+      <div class="h-title">${escapeHtml(it.bedrijfsnaam)}</div>
       <div class="h-meta">
-        <span>${escapeHtml(h.ref || '—')}</span>
-        <span>${escapeHtml(h.datum || '')}</span>
+        <span>${escapeHtml(it.ref || '—')}</span>
+        <span>${escapeHtml(it.datum || '')}</span>
       </div>
     </div>
   `).join('');
-  document.querySelectorAll('.history-item').forEach(el => {
-    el.addEventListener('click', () => openHistoryItem(+el.dataset.idx));
-  });
+  document.querySelectorAll('.history-item').forEach(el =>
+    el.addEventListener('click', () => openHistoryItem(+el.dataset.idx)));
 }
 function openHistoryItem(idx) {
-  const hist = loadHistory();
-  const h = hist[idx];
+  const h = loadHistory()[idx];
   if (!h) return;
   toggleHistory(false);
-  $('formGrid').style.display = 'none';
+  $('formWrap').style.display = 'none';
   $('loading').classList.remove('visible');
-  // populate
   renderReport({
-    bedrijfsnaam: h.bedrijfsnaam,
-    kvk: '',
-    eigenaar: h.eigenaar || '',
-    locatie: h.locatie || '',
-    sector: '',
+    bedrijfsnaam: h.bedrijfsnaam, kvk: '', eigenaar: h.eigenaar || '',
+    locatie: h.locatie || '', sector: '',
     doel: h.doel || 'algemene verkenning',
-    datum: h.datum,
-    ref: h.ref,
-    fullText: h.fullText
+    datum: h.datum, ref: h.ref,
+    fullText: h.fullText, mermaidCode: h.mermaidCode || ''
   });
   $('dossierRef').textContent = h.ref;
 }
@@ -1561,11 +1765,9 @@ function toggleHistory(open) {
 /* ---------- Util ---------- */
 function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 function escapeHtml(s) {
-  return String(s ?? '').replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
+  return String(s ?? '').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
 </script>
 </body>
 </html>

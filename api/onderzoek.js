@@ -34,8 +34,8 @@ export default async function handler(req, res) {
   if (!prompt || typeof prompt !== 'string') {
     return res.status(400).json({ error: 'Ongeldig verzoek: prompt ontbreekt.' });
   }
-  if (prompt.length > 8000) {
-    return res.status(400).json({ error: 'Prompt te lang.' });
+  if (prompt.length > 120000) {
+    return res.status(400).json({ error: 'Prompt te lang (max 120k tekens incl. documenten).' });
   }
 
   try {
