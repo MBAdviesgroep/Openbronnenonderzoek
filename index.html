@@ -263,7 +263,7 @@ body {
 --------------------------------------------------------- */
 .upload-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
 .upload-card {
@@ -276,6 +276,7 @@ body {
   cursor: pointer;
   transition: all .15s ease;
   min-height: 200px;
+  min-width: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
 }
 .upload-card:hover { border-color: var(--ink-3); background: white; }
@@ -320,8 +321,11 @@ body {
 
 .upload-files {
   width: 100%;
+  min-width: 0;
   display: flex; flex-direction: column; gap: 6px;
   margin-top: 8px;
+  max-height: 220px;
+  overflow-y: auto;
 }
 .upload-file {
   display: flex; align-items: center; justify-content: space-between;
@@ -332,9 +336,11 @@ body {
   border-radius: 3px;
   font-size: 11.5px;
   text-align: left;
+  min-width: 0;
 }
 .upload-file .name {
-  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   color: var(--ink);
 }
 .upload-file .size { font-family: var(--mono); font-size: 10px; color: var(--ink-3); }
@@ -621,14 +627,15 @@ body {
 }
 .diagram-legend {
   margin-top: 16px;
-  display: flex; gap: 16px; flex-wrap: wrap;
-  font-size: 11px; color: var(--ink-3);
+  display: flex; gap: 18px; flex-wrap: wrap;
+  font-size: 11.5px; color: var(--ink-2);
 }
-.diagram-legend .item { display: inline-flex; align-items: center; gap: 6px; }
+.diagram-legend .item { display: inline-flex; align-items: center; gap: 7px; }
 .diagram-legend .swatch {
-  width: 12px; height: 12px; border-radius: 3px;
-  border: 1.2px solid currentColor;
-  background: currentColor;
+  width: 14px; height: 14px; border-radius: 3px;
+  border: 1.4px solid #999;
+  background: #eee;
+  display: inline-block;
 }
 
 /* Report body */
@@ -1143,14 +1150,23 @@ if (window.mermaid) {
     startOnLoad: false,
     theme: 'base',
     securityLevel: 'loose',
-    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', padding: 16 },
+    flowchart: {
+      useMaxWidth: true,
+      htmlLabels: true,
+      curve: 'basis',
+      padding: 20,
+      nodeSpacing: 60,
+      rankSpacing: 70,
+    },
     themeVariables: {
       fontFamily: 'Geist, system-ui, sans-serif',
       fontSize: '13px',
       primaryColor: '#dce8ee',
       primaryTextColor: '#2a2620',
       primaryBorderColor: '#1f5878',
-      lineColor: '#7a7569',
+      lineColor: '#8a857a',
+      edgeLabelBackground: '#ffffff',
+      tertiaryColor: '#fbf8f1',
     }
   });
 }
@@ -1513,14 +1529,19 @@ function buildPrompt({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, extra
 Stel een grondig openbronnen verkenningsrapport op over de hieronder genoemde onderneming.
 Schrijf in zakelijk-Nederlands, helder, beknopt en met intellectuele precisie.
 
+BELANGRIJK — OUTPUTFORMAAT:
+- Wikkel je antwoord NIET in een \`\`\`markdown blok of andere code-fence.
+- Geef de tekst direct als platte markdown, beginnend met de eerste sectiekop.
+- Uitsluitend het Mermaid-blok aan het einde mag in een code-fence staan.
+
 ONDERWERP
 - Naam: ${bedrijfsnaam}${kvk ? '\n- KvK-nummer: ' + kvk : ''}${eigenaar ? '\n- Eigenaar / directeur: ' + eigenaar : ''}${locatie ? '\n- Locatie: ' + locatie : ''}${sector ? '\n- Sector: ' + sector : ''}
 - Aard van onderzoek: ${doel}${extra ? '\n- Specifieke wensen: ' + extra : ''}
 
-${hasDocs ? 'AANGELEVERDE DOCUMENTEN\nDe volgende documenten zijn door de adviseur aangeleverd. Gebruik deze als primaire bron — citeer relevante feiten, namen, KvK-nummers en data hieruit.\n\n' + docContext + '\n\n' : ''}WERKWIJZE
-1. Raadpleeg actuele openbare bronnen (handelsregister, bedrijfswebsite, nieuwsberichten, sociale media, branche-publicaties${hasDocs ? ', en de aangeleverde documenten hierboven' : ''}).
+${hasDocs ? 'AANGELEVERDE DOCUMENTEN\nDe volgende documenten zijn door de adviseur aangeleverd. Gebruik deze als PRIMAIRE bron — lees ze zorgvuldig en haal er feitelijke gegevens uit (KvK-nummers, bestuurders, percentages, vestigingsadressen, deelnemingen). Citeer alleen wat in de documenten of openbare bronnen staat; verzin geen entiteiten.\n\n' + docContext + '\n\n' : ''}WERKWIJZE
+1. Lees${hasDocs ? ' eerst de aangeleverde documenten en' : ''} raadpleeg actuele openbare bronnen (handelsregister, bedrijfswebsite, nieuwsberichten, sociale media, branche-publicaties).
 2. Wees eerlijk over onzekerheden. Vermeld expliciet wanneer informatie ontbreekt of niet betrouwbaar te verifiëren is. Speculeer niet.
-3. Schrijf in vloeiende paragrafen, maximaal ± 700 woorden in totaal.
+3. Schrijf in vloeiende paragrafen, maximaal ± 700 woorden.
 
 VERPLICHTE STRUCTUUR
 
@@ -1533,24 +1554,36 @@ Gebruik exact deze markdown-sectiekoppen in deze volgorde:
 ## Aandachtspunten voor ${doel}
 ## Conclusie
 
-NA HET RAPPORT — VERPLICHT BIJ EEN HOLDINGSTRUCTUUR
+NA HET RAPPORT — STRUCTUURSCHEMA (verplicht als er een holding/groepsstructuur is)
 
-Sluit af met een Mermaid-blok dat de groepsstructuur weergeeft. Geef ELKE rechtspersoon en natuurlijke persoon een eigen node, met label op twee regels (naam, dan KvK + locatie). Markeer relaties (100% deelneming, bestuurder, etc) op de pijl. Pas een classDef per type toe.
+Lever een Mermaid \`flowchart TD\` waarin:
+- ELKE entiteit uit ${hasDocs ? 'de aangeleverde documenten én' : ''} de openbare bronnen één node krijgt;
+- Het label op twee regels staat: «naam»<br/>«KvK · plaats of subtitel»;
+- Pijlen de eigendoms- en bestuursrelaties weergeven, met percentage of relatie-aard als label op de pijl («bestuurder», «100%», «≈75%»);
+- Elke node een classDef-type krijgt uit deze EXACTE lijst:
+  - **person** — natuurlijke persoon (bestuurder, aandeelhouder, UBO)
+  - **stichting** — Stichting (Administratiekantoor, STAK, etc.)
+  - **holding** — (tussen-)holding, beheer-B.V.
+  - **dochter** — directe dochtermaatschappij van de holding
+  - **kleindochter** — dochter van de dochter / exploitatie-BV
+  - **overig** — nevenvestiging, samenwerking, externe partij
 
-Voorbeeld:
+Gebruik dit format (vervang voorbeeldnamen door echte uit de documenten):
 
 \`\`\`mermaid
 flowchart TD
-    Richter["H.K. Richter<br/>bestuurder / directeur"]:::person
-    Stichting["Stichting SAKH<br/>KvK 60006501"]:::stichting
-    Holding["Let Den Helder Beheer B.V.<br/>KvK 59587911 · Julianadorp"]:::holding
-    Vastgoed["Kauri &amp; Co Vastgoed B.V.<br/>KvK 37048409"]:::dochter
-    Camping["Camping Sint Maartenszee<br/>KvK 37047192"]:::kleindochter
+    P1["«Naam persoon»<br/>bestuurder / DGA"]:::person
+    S1["«Stichting Adm. Kantoor X»<br/>KvK «12345678»"]:::stichting
+    H1["«Holding Y B.V.»<br/>KvK «23456789» · «Plaats»"]:::holding
+    D1["«Dochter A B.V.»<br/>KvK «34567890»"]:::dochter
+    D2["«Dochter B B.V.»<br/>KvK «45678901»"]:::dochter
+    K1["«Exploitatie Z B.V.»<br/>KvK «56789012»"]:::kleindochter
 
-    Richter -->|bestuurder| Stichting
-    Stichting -->|100%| Holding
-    Holding -->|100%| Vastgoed
-    Vastgoed --> Camping
+    P1 -->|bestuurder| S1
+    S1 -->|100%| H1
+    H1 -->|100%| D1
+    H1 -->|100%| D2
+    D1 -->|100%| K1
 
     classDef person fill:#fde4dc,stroke:#c8542a,stroke-width:1.5px,color:#2a2620
     classDef stichting fill:#ece6f5,stroke:#7a6da5,stroke-width:1.5px,color:#2a2620
@@ -1560,10 +1593,14 @@ flowchart TD
     classDef overig fill:#f5e3c8,stroke:#d49a5e,stroke-width:1.5px,color:#2a2620
 \`\`\`
 
-Gebruik UITSLUITEND deze classDef-namen: person, stichting, holding, dochter, kleindochter, overig.
-Als er geen holdingstructuur bekend is, laat het Mermaid-blok dan helemaal weg.
+REGELS VOOR HET SCHEMA:
+- Plaats het Mermaid-blok als laatste, ná alle tekst.
+- Gebruik korte alfanumerieke node-ID's (P1, S1, H1, D1…) — géén spaties of speciale tekens.
+- Voeg ALTIJD de zes classDef-regels onderaan toe, ook al worden niet alle types gebruikt.
+- Bij twijfel over een percentage: gebruik "deelneming" of laat het label weg, maar verzin geen percentages.
+- Als er geen holding-/groepsstructuur is, laat het Mermaid-blok WEG.
 
-Sluit af met de regel: "Dit rapport is samengesteld op basis van openbare bronnen en dient ter oriëntatie."`;
+Sluit het rapport (vóór het Mermaid-blok) af met de regel: "Dit rapport is samengesteld op basis van openbare bronnen en dient ter oriëntatie."`;
 }
 
 /* ---------- Response parsing ---------- */
@@ -1582,13 +1619,29 @@ function extractText(data) {
 }
 
 function extractStructuur(text) {
-  const re = /```mermaid\s*\n([\s\S]+?)\n```/i;
-  const m = text.match(re);
-  if (!m) return { mermaidCode: '', cleanText: text };
-  return {
-    mermaidCode: m[1].trim(),
-    cleanText: text.replace(m[0], '').replace(/\n{3,}/g, '\n\n').trim()
-  };
+  // First: pull out mermaid block
+  const mermaidRe = /```mermaid\s*\n([\s\S]+?)\n```/i;
+  const m = text.match(mermaidRe);
+  let mermaidCode = '';
+  if (m) {
+    mermaidCode = m[1].trim();
+    text = text.replace(m[0], '');
+  }
+  // Then strip any outer ```markdown/```md/```text wrappers the AI may have added
+  text = text.trim();
+  text = text.replace(/^```(?:markdown|md|text)?\s*\n?/i, '');
+  text = text.replace(/\n?```\s*$/i, '');
+  text = text.replace(/\n{3,}/g, '\n\n').trim();
+  return { mermaidCode, cleanText: text };
+}
+
+function detectUsedClasses(mermaidCode) {
+  // Find which classDefs are referenced in the diagram (":::name")
+  const used = new Set();
+  const re = /:::(\w+)/g;
+  let m;
+  while ((m = re.exec(mermaidCode)) !== null) used.add(m[1]);
+  return used;
 }
 
 /* ---------- Render report ---------- */
@@ -1634,6 +1687,8 @@ async function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel
       const id = 'mermaid-' + Date.now();
       const { svg } = await mermaid.render(id, mermaidCode);
       $('diagramShell').innerHTML = svg;
+      // Build dynamic legend (only show types actually used)
+      renderDynamicLegend(detectUsedClasses(mermaidCode));
     } catch (e) {
       console.error('Mermaid render failed:', e);
       $('diagramShell').innerHTML =
@@ -1645,14 +1700,34 @@ async function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel
   }
 
   $('reportBody').innerHTML = markdownToHtml(fullText.trim());
-  const firstP = $('reportBody').querySelector('h3 + p') || $('reportBody').querySelector('p');
-  if (firstP) firstP.classList.add('drop-cap');
+  // Drop-cap intentionally disabled — was causing visual artifacts in print.
 
   $('reportDisclaimer').textContent = disclaimer;
 
   $('loading').classList.remove('visible');
   $('report').classList.add('visible');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderDynamicLegend(usedClasses) {
+  const legendDefs = [
+    { cls: 'person',       label: 'Natuurlijk persoon',       fill: '#fde4dc', stroke: '#c8542a' },
+    { cls: 'stichting',    label: 'Stichting',                fill: '#ece6f5', stroke: '#7a6da5' },
+    { cls: 'holding',      label: '(Tussen-)holding',         fill: '#dce8ee', stroke: '#1f5878' },
+    { cls: 'dochter',      label: 'Dochtermaatschappij',      fill: '#dbeae2', stroke: '#2f6b4f' },
+    { cls: 'kleindochter', label: 'Kleindochter / exploitatie', fill: '#c8dcd0', stroke: '#5a8f72' },
+    { cls: 'overig',       label: 'Overig / nevenvestiging',  fill: '#f5e3c8', stroke: '#d49a5e' },
+  ];
+  const legend = document.querySelector('.diagram-legend');
+  if (!legend) return;
+  legend.innerHTML = legendDefs
+    .filter(d => usedClasses.has(d.cls))
+    .map(d => `
+      <span class="item">
+        <span class="swatch" style="background:${d.fill};border-color:${d.stroke};"></span>
+        ${d.label}
+      </span>
+    `).join('');
 }
 
 /* ---------- Markdown ---------- */
