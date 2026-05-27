@@ -949,7 +949,7 @@ body {
             <span class="upload-title">KvK-uittreksel</span>
             <span class="upload-desc">Bestuurders, structuur, vestigingen — <span class="browse">klik om te bladeren</span> of sleep een PDF.</span>
             <span class="upload-format">PDF · Optioneel maar aanbevolen</span>
-            <input type="file" accept=".pdf,application/pdf" />
+            <input type="file" accept=".pdf,application/pdf" multiple />
             <div class="upload-files"></div>
           </div>
 
@@ -963,8 +963,8 @@ body {
             </span>
             <span class="upload-title">Krediet- / DD-rapport</span>
             <span class="upload-desc">Graydon, Dun &amp; Bradstreet of intern DD — <span class="browse">klik om te bladeren</span>.</span>
-            <span class="upload-format">PDF · Sterk aanbevolen</span>
-            <input type="file" accept=".pdf,application/pdf" />
+            <span class="upload-format">PDF · Meerdere bestanden mogelijk</span>
+            <input type="file" accept=".pdf,application/pdf" multiple />
             <div class="upload-files"></div>
           </div>
 
@@ -1234,7 +1234,10 @@ function initUploads() {
       if (e.target.closest('.upload-file')) return;
       input.click();
     });
-    input.addEventListener('change', (e) => handleFiles(slot, e.target.files));
+    input.addEventListener('change', (e) => {
+      handleFiles(slot, e.target.files);
+      e.target.value = ''; // reset zodat hetzelfde bestand opnieuw kan
+    });
 
     card.addEventListener('dragover', (e) => {
       e.preventDefault(); card.classList.add('dragover');
@@ -1257,8 +1260,7 @@ async function handleFiles(slot, fileList) {
   const card = document.querySelector(`[data-slot="${slot}"]`);
   const list = card.querySelector('.upload-files');
 
-  // Single-file slots: replace existing
-  if (slot !== 'overig') { docs[slot] = []; list.innerHTML = ''; }
+  // Alle slots accepteren nu meerdere bestanden (cumulatief)
 
   for (const file of files) {
     const entry = { name: file.name, size: file.size, text: '', status: 'processing' };
