@@ -12,9 +12,6 @@
 <!-- pdf.js for client-side PDF text extraction -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-<!-- Mermaid for structuurschema -->
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
-
 <style>
 /* =================================================================
    MB adviesgroep · Openbronnen Onderzoek · v3
@@ -600,7 +597,7 @@ body {
 
 /* Structuurschema */
 .report-structuur {
-  padding: 32px 48px;
+  padding: 36px 48px;
   background: var(--card-warm);
   border-bottom: 1px solid var(--rule-soft);
 }
@@ -608,25 +605,31 @@ body {
   display: flex; align-items: center; gap: 12px;
   font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
   color: var(--ink-3); font-weight: 500;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 .report-structuur-head .bar { width: 3px; height: 14px; background: var(--orange); border-radius: 2px; }
+
 .diagram-shell {
   background: white;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  padding: 24px 16px;
+  padding: 28px 24px;
   overflow-x: auto;
   text-align: center;
-  min-height: 200px;
+  min-height: 220px;
+  position: relative;
 }
-.diagram-shell svg { max-width: 100%; height: auto; }
+.diagram-shell svg.structuur {
+  display: block; margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
 .diagram-shell .empty {
   font-family: var(--serif); font-style: italic;
   color: var(--ink-3); padding: 30px 0;
 }
 .diagram-legend {
-  margin-top: 16px;
+  margin-top: 18px;
   display: flex; gap: 18px; flex-wrap: wrap;
   font-size: 11.5px; color: var(--ink-2);
 }
@@ -637,6 +640,180 @@ body {
   background: #eee;
   display: inline-block;
 }
+
+/* ---------------------------------------------------------
+   KvK lookup
+--------------------------------------------------------- */
+.kvk-row {
+  display: flex; gap: 8px; align-items: stretch;
+}
+.kvk-row input { flex: 1; min-width: 0; }
+.kvk-lookup {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--teal-deep); color: white;
+  border: 1px solid var(--teal-deep);
+  padding: 0 14px; border-radius: var(--radius);
+  font-family: var(--sans); font-size: 12.5px; font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  flex-shrink: 0;
+  height: 41px;
+}
+.kvk-lookup:hover:not(:disabled) { background: var(--teal-darker); border-color: var(--teal-darker); }
+.kvk-lookup:disabled { opacity: .5; cursor: wait; }
+.kvk-lookup.loading svg { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.kvk-status {
+  font-size: 11px; min-height: 14px;
+  font-style: italic; color: var(--ink-3);
+  transition: color .2s;
+}
+.kvk-status.ok { color: var(--green); font-style: normal; }
+.kvk-status.err { color: var(--danger); font-style: normal; }
+
+/* ---------------------------------------------------------
+   EXECUTIVE SUMMARY (top of report)
+--------------------------------------------------------- */
+.exec-summary {
+  padding: 32px 48px 28px;
+  background: white;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.exec-summary-head {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500;
+  margin-bottom: 16px;
+}
+.exec-summary-head .bar { width: 3px; height: 14px; background: var(--orange); border-radius: 2px; }
+.exec-summary-text {
+  font-family: var(--serif);
+  font-size: 22px; line-height: 1.4;
+  color: var(--ink);
+  font-style: italic;
+  letter-spacing: -.01em;
+  margin-bottom: 22px;
+  max-width: 820px;
+}
+.exec-summary-text::before {
+  content: open-quote;
+  font-size: 38px;
+  line-height: 0;
+  color: var(--orange);
+  margin-right: 4px;
+  vertical-align: -.18em;
+}
+
+.indicators {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+.indicator {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius);
+  background: var(--card-warm);
+}
+.indicator .dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+  background: var(--ink-4);
+}
+.indicator.ok        .dot { background: #2f8a5b; box-shadow: 0 0 0 3px rgba(47,138,91,.18); }
+.indicator.warning   .dot { background: #d49a3b; box-shadow: 0 0 0 3px rgba(212,154,59,.2); }
+.indicator.alert     .dot { background: #c8432f; box-shadow: 0 0 0 3px rgba(200,67,47,.2); }
+.indicator.unknown   .dot { background: var(--ink-4); }
+.indicator .text-block { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.indicator .label {
+  font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+  font-weight: 600; color: var(--ink);
+}
+.indicator .note {
+  font-size: 11.5px; color: var(--ink-2);
+  line-height: 1.35;
+}
+
+/* ---------------------------------------------------------
+   KERNGEGEVENS BLOCK
+--------------------------------------------------------- */
+.kerngegevens {
+  padding: 28px 48px;
+  background: var(--card-warm);
+  border-bottom: 1px solid var(--rule-soft);
+}
+.kerngegevens-head {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500;
+  margin-bottom: 16px;
+}
+.kerngegevens-head .bar { width: 3px; height: 14px; background: var(--orange); border-radius: 2px; }
+.kerngegevens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 18px 22px;
+}
+.kerngegevens-grid .kg-item {
+  padding: 10px 0 0;
+  border-top: 1.5px solid var(--ink);
+}
+.kerngegevens-grid dt {
+  font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
+  color: var(--ink-3); margin-bottom: 4px;
+  font-weight: 500;
+}
+.kerngegevens-grid dd {
+  font-family: var(--serif); font-size: 18px;
+  color: var(--ink); line-height: 1.25;
+  letter-spacing: -.005em;
+}
+.kerngegevens-grid dd.mono { font-family: var(--mono); font-size: 14px; }
+
+/* ---------------------------------------------------------
+   BRONNEN
+--------------------------------------------------------- */
+.bronnen-section {
+  padding: 24px 48px 30px;
+  border-top: 1px solid var(--rule-soft);
+  background: var(--card-warm);
+}
+.bronnen-head {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500;
+  margin-bottom: 14px;
+}
+.bronnen-head .bar { width: 3px; height: 14px; background: var(--orange); border-radius: 2px; }
+.bronnen-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 24px;
+  font-size: 12px;
+  counter-reset: bronnen;
+}
+.bronnen-list li {
+  display: flex; gap: 8px;
+  align-items: baseline;
+  counter-increment: bronnen;
+  color: var(--ink-2);
+}
+.bronnen-list li::before {
+  content: counter(bronnen, decimal-leading-zero);
+  font-family: var(--mono); font-size: 10px;
+  color: var(--orange-deep);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.bronnen-list a {
+  color: var(--teal); text-decoration: none;
+  border-bottom: 1px dotted var(--teal-soft);
+  word-break: break-word;
+}
+.bronnen-list a:hover { border-bottom-style: solid; }
+.bronnen-list .label { color: var(--ink); }
 
 /* Report body */
 .report-body {
@@ -891,7 +1068,17 @@ body {
           </div>
           <div class="field">
             <label for="kvk">KvK-nummer</label>
-            <input type="text" id="kvk" inputmode="numeric" placeholder="8 cijfers" />
+            <div class="kvk-row">
+              <input type="text" id="kvk" inputmode="numeric" placeholder="8 cijfers" />
+              <button type="button" class="kvk-lookup" id="kvkLookup" title="Bedrijfsgegevens ophalen">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M12 12L9 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                <span>Opzoeken</span>
+              </button>
+            </div>
+            <span class="kvk-status" id="kvkStatus"></span>
           </div>
           <div class="field">
             <label for="locatie">Locatie</label>
@@ -1066,19 +1253,28 @@ body {
       </div>
 
       <div class="report-structuur" id="structuurSection" style="display:none;">
-        <div class="report-structuur-head"><span class="bar"></span>Bedrijfsstructuur (schematisch)</div>
+        <div class="report-structuur-head"><span class="bar"></span>Bedrijfsstructuur</div>
         <div class="diagram-shell" id="diagramShell"></div>
-        <div class="diagram-legend">
-          <span class="item" style="color:#c8542a;"><span class="swatch"></span> Natuurlijk persoon</span>
-          <span class="item" style="color:#7a6da5;"><span class="swatch"></span> Stichting</span>
-          <span class="item" style="color:#1f5878;"><span class="swatch"></span> Tussenholding</span>
-          <span class="item" style="color:#2f6b4f;"><span class="swatch"></span> Dochtermaatschappij</span>
-          <span class="item" style="color:#5a8f72;"><span class="swatch"></span> Kleindochter / exploitatie</span>
-          <span class="item" style="color:#d49a5e;"><span class="swatch"></span> Overig / nevenvestiging</span>
-        </div>
+        <div class="diagram-legend" id="diagramLegend"></div>
+      </div>
+
+      <div class="exec-summary" id="execSummarySection" style="display:none;">
+        <div class="exec-summary-head"><span class="bar"></span>Samenvatting &amp; signalen</div>
+        <div class="exec-summary-text" id="execSummaryText"></div>
+        <div class="indicators" id="indicatorsList"></div>
+      </div>
+
+      <div class="kerngegevens" id="kerngegevensSection" style="display:none;">
+        <div class="kerngegevens-head"><span class="bar"></span>Kerngegevens</div>
+        <dl class="kerngegevens-grid" id="kerngegevensGrid"></dl>
       </div>
 
       <article class="report-body" id="reportBody"></article>
+
+      <div class="bronnen-section" id="bronnenSection" style="display:none;">
+        <div class="bronnen-head"><span class="bar"></span>Geraadpleegde bronnen</div>
+        <ol class="bronnen-list" id="bronnenList"></ol>
+      </div>
 
       <div class="report-footer">
         <p class="disclaimer" id="reportDisclaimer"></p>
@@ -1144,31 +1340,175 @@ if (window.pdfjsLib) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 }
-// Mermaid init
-if (window.mermaid) {
-  mermaid.initialize({
-    startOnLoad: false,
-    theme: 'base',
-    securityLevel: 'loose',
-    flowchart: {
-      useMaxWidth: true,
-      htmlLabels: true,
-      curve: 'basis',
-      padding: 20,
-      nodeSpacing: 60,
-      rankSpacing: 70,
-    },
-    themeVariables: {
-      fontFamily: 'Geist, system-ui, sans-serif',
-      fontSize: '13px',
-      primaryColor: '#dce8ee',
-      primaryTextColor: '#2a2620',
-      primaryBorderColor: '#1f5878',
-      lineColor: '#8a857a',
-      edgeLabelBackground: '#ffffff',
-      tertiaryColor: '#fbf8f1',
+
+/* ================================================================
+   Custom structuurschema renderer (SVG, no dependencies)
+   ================================================================ */
+const NODE_STYLES = {
+  person:       { fill: '#fde4dc', stroke: '#c8542a', label: 'Natuurlijk persoon' },
+  stichting:    { fill: '#ece6f5', stroke: '#7a6da5', label: 'Stichting' },
+  holding:      { fill: '#dce8ee', stroke: '#1f5878', label: '(Tussen-)holding' },
+  dochter:      { fill: '#dbeae2', stroke: '#2f6b4f', label: 'Dochtermaatschappij' },
+  kleindochter: { fill: '#c8dcd0', stroke: '#5a8f72', label: 'Kleindochter / exploitatie' },
+  overig:       { fill: '#f5e3c8', stroke: '#d49a5e', label: 'Overig / nevenvestiging' },
+};
+
+function renderStructuurSVG(data) {
+  if (!data || !data.nodes || !data.nodes.length) return '';
+
+  const nodes = data.nodes.map(n => ({ ...n }));
+  const edges = (data.edges || []).map(e => ({ ...e }));
+  const idMap = new Map(nodes.map(n => [n.id, n]));
+
+  // Compute levels (longest path from any root)
+  const parents = new Map();   // id -> [parentIds]
+  const children = new Map();  // id -> [childIds]
+  nodes.forEach(n => { parents.set(n.id, []); children.set(n.id, []); });
+  edges.forEach(e => {
+    if (idMap.has(e.van) && idMap.has(e.naar)) {
+      parents.get(e.naar).push(e.van);
+      children.get(e.van).push(e.naar);
     }
   });
+
+  const level = new Map();
+  function assign(id, visiting = new Set()) {
+    if (level.has(id)) return level.get(id);
+    if (visiting.has(id)) return 0;  // break cycles
+    visiting.add(id);
+    const ps = parents.get(id) || [];
+    const v = ps.length ? Math.max(...ps.map(p => assign(p, visiting) + 1)) : 0;
+    level.set(id, v);
+    visiting.delete(id);
+    return v;
+  }
+  nodes.forEach(n => assign(n.id));
+
+  // Group by level
+  const byLevel = new Map();
+  nodes.forEach(n => {
+    const l = level.get(n.id);
+    if (!byLevel.has(l)) byLevel.set(l, []);
+    byLevel.get(l).push(n);
+  });
+  const levelKeys = [...byLevel.keys()].sort((a, b) => a - b);
+
+  // Order within level: try to keep children near average of parents
+  const order = new Map(); // id -> orderIdx within level
+  for (const l of levelKeys) {
+    const ns = byLevel.get(l);
+    if (l === levelKeys[0]) {
+      ns.forEach((n, i) => order.set(n.id, i));
+    } else {
+      // sort by mean parent order
+      ns.sort((a, b) => {
+        const am = mean((parents.get(a.id) || []).map(p => order.get(p) ?? 0));
+        const bm = mean((parents.get(b.id) || []).map(p => order.get(p) ?? 0));
+        return am - bm;
+      });
+      ns.forEach((n, i) => order.set(n.id, i));
+    }
+  }
+  function mean(arr) { return arr.length ? arr.reduce((s,x) => s+x, 0)/arr.length : 0; }
+
+  // Dimensions
+  const NODE_W = 196;
+  const NODE_H = 60;
+  const GAP_X  = 28;
+  const GAP_Y  = 78;
+  const PAD    = 24;
+
+  const maxInLevel = Math.max(...levelKeys.map(l => byLevel.get(l).length));
+  const innerW = maxInLevel * NODE_W + (maxInLevel - 1) * GAP_X;
+  const innerH = levelKeys.length * NODE_H + (levelKeys.length - 1) * GAP_Y;
+  const svgW = innerW + PAD * 2;
+  const svgH = innerH + PAD * 2;
+
+  // Compute positions
+  const pos = new Map();
+  for (const l of levelKeys) {
+    const ns = byLevel.get(l);
+    const rowW = ns.length * NODE_W + (ns.length - 1) * GAP_X;
+    let x = PAD + (innerW - rowW) / 2;
+    const y = PAD + l * (NODE_H + GAP_Y);
+    ns.forEach(n => {
+      pos.set(n.id, { x, y, w: NODE_W, h: NODE_H });
+      x += NODE_W + GAP_X;
+    });
+  }
+
+  // Build SVG
+  const parts = [];
+  parts.push(`<svg class="structuur" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgW} ${svgH}" width="${svgW}" height="${svgH}" font-family="Geist, system-ui, sans-serif">`);
+
+  // Marker defs
+  parts.push(`<defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7a7569"/>
+    </marker>
+  </defs>`);
+
+  // Edges
+  edges.forEach(e => {
+    const a = pos.get(e.van), b = pos.get(e.naar);
+    if (!a || !b) return;
+    const x1 = a.x + a.w/2, y1 = a.y + a.h;
+    const x2 = b.x + b.w/2, y2 = b.y;
+    const dy = Math.max(20, (y2 - y1) / 2);
+    const path = `M ${x1} ${y1} C ${x1} ${y1+dy}, ${x2} ${y2-dy}, ${x2} ${y2}`;
+    parts.push(`<path d="${path}" fill="none" stroke="#8a857a" stroke-width="1.4" marker-end="url(#arrowhead)"/>`);
+
+    if (e.label) {
+      const lx = (x1 + x2) / 2;
+      const ly = (y1 + y2) / 2;
+      const text = escapeHtml(String(e.label));
+      const w = text.length * 6.4 + 14;
+      parts.push(`
+        <g transform="translate(${lx - w/2}, ${ly - 9})">
+          <rect width="${w}" height="18" rx="9" fill="white" stroke="#d9d3c6" stroke-width="1"/>
+          <text x="${w/2}" y="12" text-anchor="middle" font-size="10.5" fill="#4a4640" font-weight="500">${text}</text>
+        </g>
+      `);
+    }
+  });
+
+  // Nodes
+  nodes.forEach(n => {
+    const p = pos.get(n.id);
+    const s = NODE_STYLES[n.type] || NODE_STYLES.overig;
+    const name = escapeHtml(n.naam || '');
+    const sub = escapeHtml(n.subtitel || '');
+    parts.push(`
+      <g transform="translate(${p.x}, ${p.y})">
+        <rect width="${p.w}" height="${p.h}" rx="5" ry="5" fill="${s.fill}" stroke="${s.stroke}" stroke-width="1.5"/>
+        <text x="${p.w/2}" y="24" text-anchor="middle" font-size="12.5" font-weight="600" fill="#2a2620">${truncate(name, 28)}</text>
+        ${sub ? `<text x="${p.w/2}" y="42" text-anchor="middle" font-size="10.5" fill="#4a4640">${truncate(sub, 32)}</text>` : ''}
+      </g>
+    `);
+  });
+
+  parts.push(`</svg>`);
+  return parts.join('\n');
+}
+
+function truncate(s, n) {
+  if (!s) return '';
+  return s.length > n ? s.slice(0, n - 1) + '…' : s;
+}
+
+function renderStructuurLegend(usedTypes) {
+  const order = ['person','stichting','holding','dochter','kleindochter','overig'];
+  const el = document.getElementById('diagramLegend');
+  if (!el) return;
+  el.innerHTML = order
+    .filter(t => usedTypes.has(t))
+    .map(t => {
+      const s = NODE_STYLES[t];
+      return `<span class="item">
+        <span class="swatch" style="background:${s.fill};border-color:${s.stroke};"></span>
+        ${s.label}
+      </span>`;
+    }).join('');
 }
 
 const LS_KEY_HIST = 'mb_osint_history';
@@ -1176,12 +1516,13 @@ const LS_KEY_FORM = 'mb_osint_form_draft';
 const $ = (id) => document.getElementById(id);
 
 const LOADING_STEPS = [
-  { label: 'Verzoek voorbereiden',                  dur: 1200 },
+  { label: 'Verzoek voorbereiden',                  dur: 1000 },
   { label: 'Uw documenten analyseren',              dur: 2500 },
   { label: 'KvK &amp; bedrijfsgegevens raadplegen', dur: 5500 },
   { label: 'Bestuurders &amp; eigendomsstructuur',  dur: 5000 },
   { label: 'Reputatie, pers &amp; openbare bronnen',dur: 5500 },
-  { label: 'Structuurschema opstellen',             dur: 3500 },
+  { label: 'Risico-indicatoren bepalen',            dur: 2500 },
+  { label: 'Structuurschema opbouwen',              dur: 3000 },
   { label: 'Adviesrapport samenstellen',            dur: 4500 },
 ];
 
@@ -1194,6 +1535,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initForm();
   initRadioCards();
   initUploads();
+  initKvkLookup();
   initHistory();
   renderHistoryCount();
   generateDossierRef();
@@ -1223,6 +1565,57 @@ function saveDraft() {
   const d = {};
   FORM_FIELDS.forEach(f => { d[f] = $(f).value; });
   localStorage.setItem(LS_KEY_FORM, JSON.stringify(d));
+}
+
+/* ---------- KvK Quick-fill ---------- */
+function initKvkLookup() {
+  const btn = $('kvkLookup');
+  const status = $('kvkStatus');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const kvk = $('kvk').value.trim().replace(/\D/g, '');
+    if (kvk.length < 7 || kvk.length > 9) {
+      status.className = 'kvk-status err';
+      status.textContent = 'Vul eerst een geldig KvK-nummer in (7–9 cijfers).';
+      return;
+    }
+    btn.disabled = true;
+    btn.classList.add('loading');
+    status.className = 'kvk-status';
+    status.textContent = 'Bezig met opzoeken…';
+    try {
+      const r = await fetch('/api/lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kvk })
+      });
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        throw new Error(err.error || 'HTTP ' + r.status);
+      }
+      const data = await r.json();
+      let filled = 0;
+      if (data.bedrijfsnaam && !$('bedrijfsnaam').value.trim()) { $('bedrijfsnaam').value = data.bedrijfsnaam; filled++; }
+      if (data.locatie      && !$('locatie').value.trim())      { $('locatie').value = data.locatie; filled++; }
+      if (data.eigenaar     && !$('eigenaar').value.trim())     { $('eigenaar').value = data.eigenaar; filled++; }
+      if (data.sector       && !$('sector').value.trim())       { $('sector').value = data.sector; filled++; }
+      saveDraft();
+      if (filled > 0) {
+        status.className = 'kvk-status ok';
+        status.textContent = `✓ ${filled} veld${filled>1?'en':''} aangevuld — controleer en pas aan waar nodig.`;
+        $('f-bedrijfsnaam').classList.remove('error');
+      } else {
+        status.className = 'kvk-status';
+        status.textContent = 'Geen aanvullende gegevens gevonden of velden al ingevuld.';
+      }
+    } catch (e) {
+      status.className = 'kvk-status err';
+      status.textContent = 'Opzoeken mislukt: ' + e.message;
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+    }
+  });
 }
 
 /* ---------- Radio cards ---------- */
@@ -1480,20 +1873,20 @@ async function startOnderzoek() {
     let fullText = extractText(data);
     if (!fullText) throw new Error('Geen resultaat ontvangen.');
 
-    // Parse structuurschema (mermaid block) and clean from text
-    const { mermaidCode, cleanText } = extractStructuur(fullText);
+    // Parse JSON metadata + clean text
+    const { meta, cleanText } = extractMeta(fullText);
 
     completeLoadingAnimation();
     await new Promise(r => setTimeout(r, 400));
 
     await renderReport({
       bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, datum, ref,
-      fullText: cleanText, mermaidCode
+      fullText: cleanText, meta
     });
 
     saveToHistory({
       bedrijfsnaam, eigenaar, locatie, doel, datum, ref,
-      fullText: cleanText, mermaidCode
+      fullText: cleanText, meta
     });
 
   } catch (err) {
@@ -1530,9 +1923,10 @@ Stel een grondig openbronnen verkenningsrapport op over de hieronder genoemde on
 Schrijf in zakelijk-Nederlands, helder, beknopt en met intellectuele precisie.
 
 BELANGRIJK — OUTPUTFORMAAT:
-- Wikkel je antwoord NIET in een \`\`\`markdown blok of andere code-fence.
-- Geef de tekst direct als platte markdown, beginnend met de eerste sectiekop.
-- Uitsluitend het Mermaid-blok aan het einde mag in een code-fence staan.
+- Wikkel je antwoord NIET in een \`\`\`markdown blok.
+- Begin direct met de eerste sectiekop "## Profiel van de onderneming".
+- Sluit het rapport af met de zin: "Dit rapport is samengesteld op basis van openbare bronnen en dient ter oriëntatie."
+- DAARNA volgt één \`\`\`json blok met gestructureerde metadata (zie onderaan).
 
 ONDERWERP
 - Naam: ${bedrijfsnaam}${kvk ? '\n- KvK-nummer: ' + kvk : ''}${eigenaar ? '\n- Eigenaar / directeur: ' + eigenaar : ''}${locatie ? '\n- Locatie: ' + locatie : ''}${sector ? '\n- Sector: ' + sector : ''}
@@ -1541,11 +1935,13 @@ ONDERWERP
 ${hasDocs ? 'AANGELEVERDE DOCUMENTEN\nDe volgende documenten zijn door de adviseur aangeleverd. Gebruik deze als PRIMAIRE bron — lees ze zorgvuldig en haal er feitelijke gegevens uit (KvK-nummers, bestuurders, percentages, vestigingsadressen, deelnemingen). Citeer alleen wat in de documenten of openbare bronnen staat; verzin geen entiteiten.\n\n' + docContext + '\n\n' : ''}WERKWIJZE
 1. Lees${hasDocs ? ' eerst de aangeleverde documenten en' : ''} raadpleeg actuele openbare bronnen (handelsregister, bedrijfswebsite, nieuwsberichten, sociale media, branche-publicaties).
 2. Wees eerlijk over onzekerheden. Vermeld expliciet wanneer informatie ontbreekt of niet betrouwbaar te verifiëren is. Speculeer niet.
-3. Schrijf in vloeiende paragrafen, maximaal ± 700 woorden.
+3. Schrijf in vloeiende paragrafen, maximaal ± 700 woorden voor het tekstrapport.
 
-VERPLICHTE STRUCTUUR
+==================================================
+DEEL 1 — RAPPORT (markdown)
+==================================================
 
-Gebruik exact deze markdown-sectiekoppen in deze volgorde:
+Gebruik exact deze sectiekoppen in deze volgorde:
 
 ## Profiel van de onderneming
 ## Bestuur en eigenaarschap
@@ -1554,55 +1950,62 @@ Gebruik exact deze markdown-sectiekoppen in deze volgorde:
 ## Aandachtspunten voor ${doel}
 ## Conclusie
 
-NA HET RAPPORT — STRUCTUURSCHEMA (verplicht als er een holding/groepsstructuur is)
+Sluit af met: "Dit rapport is samengesteld op basis van openbare bronnen en dient ter oriëntatie."
 
-Lever een Mermaid \`flowchart TD\` waarin:
-- ELKE entiteit uit ${hasDocs ? 'de aangeleverde documenten én' : ''} de openbare bronnen één node krijgt;
-- Het label op twee regels staat: «naam»<br/>«KvK · plaats of subtitel»;
-- Pijlen de eigendoms- en bestuursrelaties weergeven, met percentage of relatie-aard als label op de pijl («bestuurder», «100%», «≈75%»);
-- Elke node een classDef-type krijgt uit deze EXACTE lijst:
-  - **person** — natuurlijke persoon (bestuurder, aandeelhouder, UBO)
-  - **stichting** — Stichting (Administratiekantoor, STAK, etc.)
-  - **holding** — (tussen-)holding, beheer-B.V.
-  - **dochter** — directe dochtermaatschappij van de holding
-  - **kleindochter** — dochter van de dochter / exploitatie-BV
-  - **overig** — nevenvestiging, samenwerking, externe partij
+==================================================
+DEEL 2 — GESTRUCTUREERDE METADATA (verplicht)
+==================================================
 
-Gebruik dit format (vervang voorbeeldnamen door echte uit de documenten):
+NA het rapport, geef EXACT één \`\`\`json codeblok met onderstaande structuur. Alle velden zijn verplicht; gebruik lege array [] als er niets te melden is voor dat veld.
 
-\`\`\`mermaid
-flowchart TD
-    P1["«Naam persoon»<br/>bestuurder / DGA"]:::person
-    S1["«Stichting Adm. Kantoor X»<br/>KvK «12345678»"]:::stichting
-    H1["«Holding Y B.V.»<br/>KvK «23456789» · «Plaats»"]:::holding
-    D1["«Dochter A B.V.»<br/>KvK «34567890»"]:::dochter
-    D2["«Dochter B B.V.»<br/>KvK «45678901»"]:::dochter
-    K1["«Exploitatie Z B.V.»<br/>KvK «56789012»"]:::kleindochter
-
-    P1 -->|bestuurder| S1
-    S1 -->|100%| H1
-    H1 -->|100%| D1
-    H1 -->|100%| D2
-    D1 -->|100%| K1
-
-    classDef person fill:#fde4dc,stroke:#c8542a,stroke-width:1.5px,color:#2a2620
-    classDef stichting fill:#ece6f5,stroke:#7a6da5,stroke-width:1.5px,color:#2a2620
-    classDef holding fill:#dce8ee,stroke:#1f5878,stroke-width:1.5px,color:#2a2620
-    classDef dochter fill:#dbeae2,stroke:#2f6b4f,stroke-width:1.5px,color:#2a2620
-    classDef kleindochter fill:#c8dcd0,stroke:#5a8f72,stroke-width:1.5px,color:#2a2620
-    classDef overig fill:#f5e3c8,stroke:#d49a5e,stroke-width:1.5px,color:#2a2620
+\`\`\`json
+{
+  "samenvatting": "Eén alinea van 2–3 zinnen die de kern van de bevindingen samenvat — bedoeld voor wie geen tijd heeft het volledige rapport te lezen.",
+  "indicatoren": [
+    { "label": "Solvabiliteit", "status": "ok|warning|alert|unknown", "toelichting": "korte zin van max 8 woorden" },
+    { "label": "Persaandacht", "status": "ok|warning|alert|unknown", "toelichting": "..." },
+    { "label": "Bestuursstructuur", "status": "ok|warning|alert|unknown", "toelichting": "..." },
+    { "label": "Sancties / PEP", "status": "ok|warning|alert|unknown", "toelichting": "..." },
+    { "label": "Juridisch / faillissement", "status": "ok|warning|alert|unknown", "toelichting": "..." }
+  ],
+  "kerngegevens": [
+    { "label": "Opgericht", "value": "dd mmm jjjj" },
+    { "label": "Rechtsvorm", "value": "B.V. / Stichting / etc." },
+    { "label": "Werknemers", "value": "± aantal" },
+    { "label": "Kapitaal / omzet", "value": "€..." }
+  ],
+  "structuur": {
+    "nodes": [
+      { "id": "P1", "naam": "Volledige naam", "subtitel": "rol of KvK + plaats", "type": "person" }
+    ],
+    "edges": [
+      { "van": "P1", "naar": "S1", "label": "bestuurder" },
+      { "van": "S1", "naar": "H1", "label": "100%" }
+    ]
+  },
+  "bronnen": [
+    { "label": "KvK Handelsregister", "url": "https://..." },
+    { "label": "Bedrijfswebsite", "url": "https://..." }
+  ]
+}
 \`\`\`
 
-REGELS VOOR HET SCHEMA:
-- Plaats het Mermaid-blok als laatste, ná alle tekst.
-- Gebruik korte alfanumerieke node-ID's (P1, S1, H1, D1…) — géén spaties of speciale tekens.
-- Voeg ALTIJD de zes classDef-regels onderaan toe, ook al worden niet alle types gebruikt.
-- Bij twijfel over een percentage: gebruik "deelneming" of laat het label weg, maar verzin geen percentages.
-- Als er geen holding-/groepsstructuur is, laat het Mermaid-blok WEG.
+REGELS VOOR DE METADATA:
 
-Sluit het rapport (vóór het Mermaid-blok) af met de regel: "Dit rapport is samengesteld op basis van openbare bronnen en dient ter oriëntatie."`;
+**indicatoren** — 4 tot 6 stuks. Status-betekenis:
+- "ok"      = geen problemen geconstateerd
+- "warning" = aandachtspunt / vereist nader onderzoek
+- "alert"   = duidelijk risico of negatief signaal
+- "unknown" = onvoldoende informatie
+
+**kerngegevens** — 3 tot 6 stuks. Alleen feitelijke, in openbare bronnen vindbare gegevens. Laat weg wat onbekend is.
+
+**structuur** — alleen invullen als er een holding-/groepsstructuur is. node.type MOET één van: "person", "stichting", "holding", "dochter", "kleindochter", "overig". Geef ELKE rechtspersoon en natuurlijke persoon één node. Gebruik korte alfanumerieke ID's (P1, S1, H1, D1, D2, K1…). Edges: gebruik percentage ("100%", "≈75%"), "bestuurder", "deelneming", etc. Als er geen groepsstructuur is, geef "structuur": { "nodes": [], "edges": [] }.
+
+**bronnen** — alle web-URLs die je hebt geraadpleegd. Minimaal 3, idealiter 5–10. Label kort (max 6 woorden), URL volledig.
+
+Verzin geen URLs of entiteiten — beter "unknown" of leeg laten dan verzinnen.`;
 }
-
 /* ---------- Response parsing ---------- */
 function extractText(data) {
   let text = '';
@@ -1618,36 +2021,27 @@ function extractText(data) {
   return text;
 }
 
-function extractStructuur(text) {
-  // First: pull out mermaid block
-  const mermaidRe = /```mermaid\s*\n([\s\S]+?)\n```/i;
-  const m = text.match(mermaidRe);
-  let mermaidCode = '';
-  if (m) {
-    mermaidCode = m[1].trim();
-    text = text.replace(m[0], '');
+function extractMeta(text) {
+  // 1) Find JSON metadata block
+  const jsonRe = /```json\s*\n([\s\S]+?)\n```/i;
+  const jm = text.match(jsonRe);
+  let meta = null;
+  if (jm) {
+    try { meta = JSON.parse(jm[1]); } catch (e) { console.warn('JSON parse failed', e); }
+    text = text.replace(jm[0], '');
   }
-  // Then strip any outer ```markdown/```md/```text wrappers the AI may have added
+  // 2) Strip any outer ```markdown/```md wrappers
   text = text.trim();
   text = text.replace(/^```(?:markdown|md|text)?\s*\n?/i, '');
   text = text.replace(/\n?```\s*$/i, '');
   text = text.replace(/\n{3,}/g, '\n\n').trim();
-  return { mermaidCode, cleanText: text };
-}
-
-function detectUsedClasses(mermaidCode) {
-  // Find which classDefs are referenced in the diagram (":::name")
-  const used = new Set();
-  const re = /:::(\w+)/g;
-  let m;
-  while ((m = re.exec(mermaidCode)) !== null) used.add(m[1]);
-  return used;
+  return { meta, cleanText: text };
 }
 
 /* ---------- Render report ---------- */
-async function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, datum, ref, fullText, mermaidCode }) {
+async function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, datum, ref, fullText, meta }) {
 
-  // Disclaimer
+  // Disclaimer extraction
   let disclaimer = 'Dit rapport is samengesteld op basis van openbare bronnen en dient ter oriëntatie. Het betreft een snelle verkenning, geen juridisch geverifieerd document. Voor formele besluitvorming raden wij verificatie via primaire bronnen aan.';
   const discMatch = fullText.match(/\n+(Dit rapport[^\n]+)\s*$/i);
   if (discMatch) {
@@ -1655,6 +2049,7 @@ async function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel
     fullText = fullText.slice(0, discMatch.index);
   }
 
+  // Cover
   $('reportTitle').textContent = bedrijfsnaam;
   const subParts = [];
   if (sector) subParts.push(capitalize(sector));
@@ -1664,43 +2059,87 @@ async function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel
   $('reportRef').textContent = 'REF ' + ref;
   $('reportRefBottom').textContent = 'REF ' + ref;
 
-  const meta = [];
-  meta.push({ k: 'Onderzoeksdoel', v: capitalize(doel) });
-  meta.push({ k: 'Datum',          v: datum });
-  if (eigenaar) meta.push({ k: 'Bestuurder', v: eigenaar });
-  if (kvk)      meta.push({ k: 'KvK', v: kvk, mono: true });
-  if (!eigenaar && !kvk) meta.push({ k: 'Brontype', v: 'Openbaar' });
-  if (meta.length < 4) meta.push({ k: 'Opgesteld door', v: 'MB adviesgroep' });
+  const metaCover = [];
+  metaCover.push({ k: 'Onderzoeksdoel', v: capitalize(doel) });
+  metaCover.push({ k: 'Datum',          v: datum });
+  if (eigenaar) metaCover.push({ k: 'Bestuurder', v: eigenaar });
+  if (kvk)      metaCover.push({ k: 'KvK', v: kvk, mono: true });
+  if (!eigenaar && !kvk) metaCover.push({ k: 'Brontype', v: 'Openbaar' });
+  if (metaCover.length < 4) metaCover.push({ k: 'Opgesteld door', v: 'MB adviesgroep' });
 
-  $('reportMeta').innerHTML = meta.slice(0, 4).map(m => `
+  $('reportMeta').innerHTML = metaCover.slice(0, 4).map(m => `
     <div>
       <dt>${m.k}</dt>
       <dd${m.mono ? ' class="mono"' : ''}>${escapeHtml(m.v)}</dd>
     </div>
   `).join('');
 
-  // Render diagram
-  if (mermaidCode && window.mermaid) {
+  // Custom SVG structuurschema
+  if (meta?.structuur && meta.structuur.nodes && meta.structuur.nodes.length) {
     $('structuurSection').style.display = '';
-    $('diagramShell').innerHTML = '<div class="empty">Schema wordt gegenereerd…</div>';
-    try {
-      const id = 'mermaid-' + Date.now();
-      const { svg } = await mermaid.render(id, mermaidCode);
-      $('diagramShell').innerHTML = svg;
-      // Build dynamic legend (only show types actually used)
-      renderDynamicLegend(detectUsedClasses(mermaidCode));
-    } catch (e) {
-      console.error('Mermaid render failed:', e);
-      $('diagramShell').innerHTML =
-        '<div class="empty">Kon het structuurschema niet renderen.<br/><small style="font-family:var(--mono);font-style:normal;">' +
-        escapeHtml(e.message || '') + '</small></div>';
-    }
+    const svg = renderStructuurSVG(meta.structuur);
+    $('diagramShell').innerHTML = svg || '<div class="empty">Geen structuurschema beschikbaar.</div>';
+    const usedTypes = new Set(meta.structuur.nodes.map(n => n.type).filter(Boolean));
+    renderStructuurLegend(usedTypes);
   } else {
     $('structuurSection').style.display = 'none';
   }
 
+  // Executive summary + indicators
+  if (meta?.samenvatting || (meta?.indicatoren && meta.indicatoren.length)) {
+    $('execSummarySection').style.display = '';
+    $('execSummaryText').textContent = meta.samenvatting || '';
+    if (meta.indicatoren && meta.indicatoren.length) {
+      $('indicatorsList').innerHTML = meta.indicatoren.map(ind => {
+        const status = ['ok','warning','alert','unknown'].includes(ind.status) ? ind.status : 'unknown';
+        return `
+          <div class="indicator ${status}">
+            <span class="dot"></span>
+            <div class="text-block">
+              <span class="label">${escapeHtml(ind.label || '')}</span>
+              ${ind.toelichting ? `<span class="note">${escapeHtml(ind.toelichting)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      $('indicatorsList').innerHTML = '';
+    }
+  } else {
+    $('execSummarySection').style.display = 'none';
+  }
+
+  // Kerngegevens
+  if (meta?.kerngegevens && meta.kerngegevens.length) {
+    $('kerngegevensSection').style.display = '';
+    $('kerngegevensGrid').innerHTML = meta.kerngegevens.map(k => `
+      <div class="kg-item">
+        <dt>${escapeHtml(k.label || '')}</dt>
+        <dd${/^\d|^€|kvk/i.test(k.value || '') ? ' class="mono"' : ''}>${escapeHtml(k.value || '')}</dd>
+      </div>
+    `).join('');
+  } else {
+    $('kerngegevensSection').style.display = 'none';
+  }
+
+  // Body markdown
   $('reportBody').innerHTML = markdownToHtml(fullText.trim());
-  // Drop-cap intentionally disabled — was causing visual artifacts in print.
+
+  // Bronnen
+  if (meta?.bronnen && meta.bronnen.length) {
+    $('bronnenSection').style.display = '';
+    $('bronnenList').innerHTML = meta.bronnen.map(b => {
+      const label = escapeHtml(b.label || '');
+      const url = b.url || '';
+      const isUrl = /^https?:/i.test(url);
+      return `<li>${isUrl
+        ? `<span class="label">${label}</span> → <a href="${escapeAttr(url)}" target="_blank" rel="noopener">${escapeHtml(url.replace(/^https?:\/\//, '').slice(0, 60))}</a>`
+        : `<span class="label">${label}</span>${url ? ' — ' + escapeHtml(url) : ''}`
+      }</li>`;
+    }).join('');
+  } else {
+    $('bronnenSection').style.display = 'none';
+  }
 
   $('reportDisclaimer').textContent = disclaimer;
 
@@ -1709,25 +2148,8 @@ async function renderReport({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function renderDynamicLegend(usedClasses) {
-  const legendDefs = [
-    { cls: 'person',       label: 'Natuurlijk persoon',       fill: '#fde4dc', stroke: '#c8542a' },
-    { cls: 'stichting',    label: 'Stichting',                fill: '#ece6f5', stroke: '#7a6da5' },
-    { cls: 'holding',      label: '(Tussen-)holding',         fill: '#dce8ee', stroke: '#1f5878' },
-    { cls: 'dochter',      label: 'Dochtermaatschappij',      fill: '#dbeae2', stroke: '#2f6b4f' },
-    { cls: 'kleindochter', label: 'Kleindochter / exploitatie', fill: '#c8dcd0', stroke: '#5a8f72' },
-    { cls: 'overig',       label: 'Overig / nevenvestiging',  fill: '#f5e3c8', stroke: '#d49a5e' },
-  ];
-  const legend = document.querySelector('.diagram-legend');
-  if (!legend) return;
-  legend.innerHTML = legendDefs
-    .filter(d => usedClasses.has(d.cls))
-    .map(d => `
-      <span class="item">
-        <span class="swatch" style="background:${d.fill};border-color:${d.stroke};"></span>
-        ${d.label}
-      </span>
-    `).join('');
+function escapeAttr(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 /* ---------- Markdown ---------- */
@@ -1830,7 +2252,7 @@ function openHistoryItem(idx) {
     locatie: h.locatie || '', sector: '',
     doel: h.doel || 'algemene verkenning',
     datum: h.datum, ref: h.ref,
-    fullText: h.fullText, mermaidCode: h.mermaidCode || ''
+    fullText: h.fullText, meta: h.meta || null
   });
   $('dossierRef').textContent = h.ref;
 }
