@@ -830,18 +830,22 @@ body {
   margin: 32px 0 12px;
   line-height: 1.2;
   letter-spacing: -.01em;
-  position: relative;
-  padding-left: 48px;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: baseline;
+  gap: 0;
   counter-increment: section;
+  break-after: avoid;
+  page-break-after: avoid;
 }
 .report-body { counter-reset: section; }
 .report-body h3:first-child { margin-top: 0; }
 .report-body h3::before {
   content: "§ " counter(section, decimal-leading-zero);
-  position: absolute; left: 0; top: 10px;
   font-family: var(--mono); font-size: 11px;
   letter-spacing: 1.5px; color: var(--orange);
   font-weight: 500;
+  line-height: 1.5;
 }
 .report-body p { margin-bottom: 14px; }
 .report-body p.drop-cap::first-letter {
@@ -1007,17 +1011,73 @@ body {
    PRINT
 --------------------------------------------------------- */
 @media print {
-  body { background: white; }
+  body { background: white; font-size: 10.5pt; }
   body::before, body { background-image: none; }
-  .brandstrip, .form-container, .loading, .alert, .report-actions, .page-footer, .history-overlay, .history-drawer, .meta-strip { display: none !important; }
+  .brandstrip, #formWrap, .loading, .alert, .report-actions, .page-footer,
+  .history-overlay, .history-drawer, .meta-strip { display: none !important; }
   .container { padding: 0; max-width: none; }
   .report-shell { border: none; box-shadow: none; border-radius: 0; }
-  .report-cover { padding: 24px 0 26px; }
-  .report-structuur { padding: 22px 0; background: white; }
-  .report-body { padding: 28px 0; max-width: none; font-size: 11.5pt; line-height: 1.65; color: #000; }
-  .report-body h3 { color: #000; }
-  .report-footer { padding: 14px 0 0; background: white; }
-  @page { margin: 16mm; }
+
+  /* Cover — compact, kept together */
+  .report-cover { padding: 22px 0 22px; break-inside: avoid; break-after: avoid; }
+  .cover-title { font-size: 28pt; }
+  .cover-subtitle { font-size: 13pt; }
+  .cover-dl { margin-top: 18px; padding-top: 14px; gap: 14px; }
+  .cover-dl dd { font-size: 11.5pt; }
+
+  /* Section paddings (no horizontal padding in print) */
+  .exec-summary,
+  .kerngegevens,
+  .report-structuur,
+  .bronnen-section,
+  .report-footer { padding-left: 0; padding-right: 0; background: white !important; }
+  .exec-summary { padding-top: 18px; padding-bottom: 18px; break-inside: avoid; }
+  .kerngegevens { padding-top: 16px; padding-bottom: 18px; break-inside: avoid; }
+  .report-structuur { padding-top: 18px; padding-bottom: 18px; break-inside: avoid; }
+  .bronnen-section { padding-top: 16px; padding-bottom: 12px; break-inside: avoid; }
+  .report-footer { padding-top: 12px; }
+
+  /* Executive summary tighter for print */
+  .exec-summary-text { font-size: 13.5pt; line-height: 1.4; margin-bottom: 14px; }
+
+  /* Indicators: 2 columns in print, compact */
+  .indicators { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .indicator { padding: 7px 10px; break-inside: avoid; }
+  .indicator .label { font-size: 9pt; }
+  .indicator .note { font-size: 9.5pt; }
+
+  /* Kerngegevens compact */
+  .kerngegevens-grid { gap: 12px 18px; }
+  .kerngegevens-grid dd { font-size: 13pt; }
+  .kerngegevens-grid .kg-item { break-inside: avoid; }
+
+  /* Markdown body */
+  .report-body { padding: 22px 0; max-width: none; font-size: 11pt; line-height: 1.55; color: #000; }
+  .report-body h3 {
+    color: #000;
+    font-size: 16pt;
+    margin-top: 22px;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .report-body p { orphans: 3; widows: 3; margin-bottom: 10px; }
+  .report-body ul { margin: 6px 0 12px 0; }
+  .report-body ul li { break-inside: avoid; }
+
+  /* Diagram — ensure it fits */
+  .diagram-shell { padding: 12px 8px; }
+  .diagram-shell svg.structuur { max-width: 100% !important; height: auto !important; }
+  .diagram-legend { font-size: 9.5pt; }
+
+  /* Bronnen */
+  .bronnen-list { grid-template-columns: 1fr 1fr; font-size: 9.5pt; gap: 4px 18px; }
+  .bronnen-list li { break-inside: avoid; }
+
+  /* Signature */
+  .signature { margin-top: 14px; }
+  .signature .firm img { height: 26px; }
+
+  @page { margin: 14mm 14mm 16mm; }
 }
 </style>
 </head>
@@ -1252,12 +1312,6 @@ body {
         <dl class="cover-dl" id="reportMeta"></dl>
       </div>
 
-      <div class="report-structuur" id="structuurSection" style="display:none;">
-        <div class="report-structuur-head"><span class="bar"></span>Bedrijfsstructuur</div>
-        <div class="diagram-shell" id="diagramShell"></div>
-        <div class="diagram-legend" id="diagramLegend"></div>
-      </div>
-
       <div class="exec-summary" id="execSummarySection" style="display:none;">
         <div class="exec-summary-head"><span class="bar"></span>Samenvatting &amp; signalen</div>
         <div class="exec-summary-text" id="execSummaryText"></div>
@@ -1270,6 +1324,12 @@ body {
       </div>
 
       <article class="report-body" id="reportBody"></article>
+
+      <div class="report-structuur" id="structuurSection" style="display:none;">
+        <div class="report-structuur-head"><span class="bar"></span>Bedrijfsstructuur</div>
+        <div class="diagram-shell" id="diagramShell"></div>
+        <div class="diagram-legend" id="diagramLegend"></div>
+      </div>
 
       <div class="bronnen-section" id="bronnenSection" style="display:none;">
         <div class="bronnen-head"><span class="bar"></span>Geraadpleegde bronnen</div>
@@ -1589,6 +1649,9 @@ function initKvkLookup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ kvk })
       });
+      if (r.status === 404) {
+        throw new Error('De /api/lookup endpoint bestaat nog niet. Heeft u api/lookup.js naar GitHub geüpload? Vercel deployt automatisch na een commit.');
+      }
       if (!r.ok) {
         const err = await r.json().catch(() => ({}));
         throw new Error(err.error || 'HTTP ' + r.status);
@@ -1850,8 +1913,9 @@ async function startOnderzoek() {
   const ref = $('dossierRef').textContent;
 
   const docContext = buildDocContext();
+  const detectedEntities = detectDocEntities();
   const prompt = buildPrompt({
-    bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, extra, docContext
+    bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, extra, docContext, detectedEntities
   });
 
   try {
@@ -1914,9 +1978,123 @@ function buildDocContext() {
   return parts.join('\n\n');
 }
 
+/* ---------- Entity pre-scanner ---------- */
+// Vindt KvK-nummers en bedrijfsnamen in alle geüploade documenten,
+// zodat we ze expliciet aan de AI kunnen geven en deze geen entiteiten mist.
+function detectDocEntities() {
+  const found = new Map(); // kvk -> {kvk, naam, count, slots}
+
+  // Company-name patterns — anchored to capitalised letter, ending in entity suffix
+  const NAME_PATTERNS = [
+    /([A-Z][A-Za-zÀ-ž0-9&'.\- ]{1,70}?\b(?:B\.\s?V\.?|B\.V\.))/g,
+    /([A-Z][A-Za-zÀ-ž0-9&'.\- ]{1,70}?\b(?:N\.\s?V\.?|N\.V\.))/g,
+    /([A-Z][A-Za-zÀ-ž0-9&'.\- ]{1,70}?\b(?:V\.O\.F\.|VOF))/g,
+    /(Stichting\s+(?:Administratiekantoor\s+)?[A-Z][A-Za-zÀ-ž0-9&'.\- ]{2,70}?)(?=\s*[\.,;:\n(]|\s+KvK|\s+gevestigd|\s*$)/g,
+    /(Camping\s+[A-Z][A-Za-zÀ-ž0-9&'.\- ]{2,50}?)(?=\s*[\.,;:\n(]|\s+KvK|\s*$)/g,
+    /(Strandpaviljoen\s+[A-Z][A-Za-zÀ-ž0-9&'.\- ]{2,50}?)(?=\s*[\.,;:\n(]|\s+KvK|\s*$)/g,
+    /(Holding\s+[A-Z][A-Za-zÀ-ž0-9&'.\- ]{2,50}?)(?=\s*[\.,;:\n(]|\s+KvK|\s*$)/g,
+  ];
+
+  function cleanName(s) {
+    let r = s.replace(/\s+/g, ' ').trim();
+    // Strip common leading prefixes iteratively
+    let prev;
+    do {
+      prev = r;
+      r = r
+        .replace(/^Uittreksel\s+(?:Handelsregister\s+)?(?:Kamer\s+van\s+Koophandel\s+)?/i, '')
+        .replace(/^Handelsregister\s+(?:Kamer\s+van\s+Koophandel\s+)?/i, '')
+        .replace(/^Kamer\s+van\s+Koophandel\s+/i, '')
+        .replace(/^KvK[-\s]*(?:nummer)?[\s:]*\d*\s*/i, '')
+        .replace(/^(?:Aandeelhouder|Bestuurder|Eigenaar|Naam|Statutaire\s+naam|Handelsnaam|Naam\s+ondernemer|gevestigd\s+te|gevestigd)[\s:]+/i, '')
+        .replace(/^\d{4,}\s+/, '')          // leading number (KvK/year)
+        .replace(/^[\s,.;:\-•—]+/, '');
+    } while (r !== prev && r.length > 0);
+    return r.replace(/[\s,.;:\-]+$/, '').trim();
+  }
+
+  function isPlausibleName(s) {
+    if (!s) return false;
+    if (s.length < 5 || s.length > 90) return false;
+    // Must contain at least one letter and look like a name
+    if (!/[A-Za-z]{3}/.test(s)) return false;
+    return true;
+  }
+
+  for (const slot of ['kvk','graydon','overig']) {
+    for (const d of docs[slot]) {
+      if (d.status !== 'ok' || !d.text) continue;
+      const text = d.text;
+
+      // 1) Collect ALL plausible company names with positions
+      const names = []; // [{name, start, end}]
+      for (const pat of NAME_PATTERNS) {
+        const re = new RegExp(pat.source, 'g');
+        let m;
+        while ((m = re.exec(text)) !== null) {
+          const cleaned = cleanName(m[1]);
+          if (isPlausibleName(cleaned)) {
+            names.push({ name: cleaned, start: m.index, end: m.index + m[0].length });
+          }
+        }
+      }
+
+      // 2) Collect KvK numbers (8 digits with optional KvK context)
+      const kvks = []; // [{kvk, pos}]
+      const kvkRe = /\b(\d{8})\b/g;
+      let km;
+      while ((km = kvkRe.exec(text)) !== null) {
+        kvks.push({ kvk: km[1], pos: km.index });
+      }
+
+      // 3) Pair each KvK with the nearest name (within 300 chars window)
+      for (const k of kvks) {
+        let nearest = null;
+        let nearestDist = Infinity;
+        for (const n of names) {
+          const dist = Math.min(
+            Math.abs(k.pos - n.end),
+            Math.abs(k.pos - n.start)
+          );
+          if (dist < 300 && dist < nearestDist) {
+            nearestDist = dist;
+            nearest = n;
+          }
+        }
+        const naam = nearest ? nearest.name : '';
+
+        if (!found.has(k.kvk)) {
+          found.set(k.kvk, { kvk: k.kvk, naam, count: 1, slots: new Set([slot]) });
+        } else {
+          const e = found.get(k.kvk);
+          e.count++;
+          e.slots.add(slot);
+          // Prefer a SHORTER name if we previously had no name or a long one
+          if (naam && (!e.naam || (naam.length < e.naam.length && naam.length >= 8))) {
+            e.naam = naam;
+          }
+        }
+      }
+    }
+  }
+
+  return Array.from(found.values()).sort((a, b) => b.count - a.count);
+}
+
 /* ---------- Prompt ---------- */
-function buildPrompt({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, extra, docContext }) {
+function buildPrompt({ bedrijfsnaam, kvk, eigenaar, locatie, sector, doel, extra, docContext, detectedEntities }) {
   const hasDocs = docContext && docContext.length > 0;
+  const hasEntities = detectedEntities && detectedEntities.length > 0;
+
+  const entityBlock = hasEntities ? `
+GEÏDENTIFICEERDE ENTITEITEN UIT DE GEÜPLOADE DOCUMENTEN
+(deze KvK-nummers en namen zijn door pre-scan in de documenten gevonden — gebruik ze als basis voor het structuurschema, mis er GÉÉN van):
+
+${detectedEntities.map(e => `• KvK ${e.kvk} — ${e.naam || '«naam moet nog gevonden worden»'} (${e.count}× genoemd in ${[...e.slots].join('/')})`).join('\n')}
+
+Bepaal de hiërarchische relaties tussen deze entiteiten op basis van de concernrelaties-vermeldingen, "100% deelneming", "moedermaatschappij", "dochtermaatschappij" en vergelijkbare aanwijzingen in de documenten.
+
+` : '';
 
   return `Je bent een senior onderzoeker bij MB adviesgroep — een Nederlands advieskantoor.
 Stel een grondig openbronnen verkenningsrapport op over de hieronder genoemde onderneming.
@@ -1932,7 +2110,7 @@ ONDERWERP
 - Naam: ${bedrijfsnaam}${kvk ? '\n- KvK-nummer: ' + kvk : ''}${eigenaar ? '\n- Eigenaar / directeur: ' + eigenaar : ''}${locatie ? '\n- Locatie: ' + locatie : ''}${sector ? '\n- Sector: ' + sector : ''}
 - Aard van onderzoek: ${doel}${extra ? '\n- Specifieke wensen: ' + extra : ''}
 
-${hasDocs ? 'AANGELEVERDE DOCUMENTEN\nDe volgende documenten zijn door de adviseur aangeleverd. Gebruik deze als PRIMAIRE bron — lees ze zorgvuldig en haal er feitelijke gegevens uit (KvK-nummers, bestuurders, percentages, vestigingsadressen, deelnemingen). Citeer alleen wat in de documenten of openbare bronnen staat; verzin geen entiteiten.\n\n' + docContext + '\n\n' : ''}WERKWIJZE
+${hasDocs ? 'AANGELEVERDE DOCUMENTEN\nDe volgende documenten zijn door de adviseur aangeleverd. Gebruik deze als PRIMAIRE bron — lees ze zorgvuldig en haal er feitelijke gegevens uit (KvK-nummers, bestuurders, percentages, vestigingsadressen, deelnemingen). Citeer alleen wat in de documenten of openbare bronnen staat; verzin geen entiteiten.\n\n' + docContext + '\n\n' : ''}${entityBlock}WERKWIJZE
 1. Lees${hasDocs ? ' eerst de aangeleverde documenten en' : ''} raadpleeg actuele openbare bronnen (handelsregister, bedrijfswebsite, nieuwsberichten, sociale media, branche-publicaties).
 2. Wees eerlijk over onzekerheden. Vermeld expliciet wanneer informatie ontbreekt of niet betrouwbaar te verifiëren is. Speculeer niet.
 3. Schrijf in vloeiende paragrafen, maximaal ± 700 woorden voor het tekstrapport.
@@ -2000,7 +2178,7 @@ REGELS VOOR DE METADATA:
 
 **kerngegevens** — 3 tot 6 stuks. Alleen feitelijke, in openbare bronnen vindbare gegevens. Laat weg wat onbekend is.
 
-**structuur** — alleen invullen als er een holding-/groepsstructuur is. node.type MOET één van: "person", "stichting", "holding", "dochter", "kleindochter", "overig". Geef ELKE rechtspersoon en natuurlijke persoon één node. Gebruik korte alfanumerieke ID's (P1, S1, H1, D1, D2, K1…). Edges: gebruik percentage ("100%", "≈75%"), "bestuurder", "deelneming", etc. Als er geen groepsstructuur is, geef "structuur": { "nodes": [], "edges": [] }.
+**structuur** — ${hasEntities ? `**verplicht** — gebruik ALLE ${detectedEntities.length} geïdentificeerde entiteiten hierboven, geen één vergeten` : 'alleen invullen als er een holding-/groepsstructuur is'}. node.type MOET één van: "person", "stichting", "holding", "dochter", "kleindochter", "overig". Geef ELKE rechtspersoon en natuurlijke persoon één node. Gebruik korte alfanumerieke ID's (P1, S1, H1, D1, D2, K1…). Edges: gebruik percentage ("100%", "≈75%"), "bestuurder", "deelneming", etc. Als er geen groepsstructuur is, geef "structuur": { "nodes": [], "edges": [] }.
 
 **bronnen** — alle web-URLs die je hebt geraadpleegd. Minimaal 3, idealiter 5–10. Label kort (max 6 woorden), URL volledig.
 
